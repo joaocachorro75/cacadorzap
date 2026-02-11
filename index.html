@@ -11,8 +11,10 @@
         
         :root {
             --wa-green: #25d366;
-            --emerald-bright: #34d399;
+            --wa-light: #4ade80;
+            --emerald-bright: #10b981;
             --bg-deep: #020617;
+            --glass-border: rgba(255, 255, 255, 0.1);
         }
 
         body {
@@ -28,66 +30,64 @@
         }
 
         .glass {
-            background: rgba(15, 23, 42, 0.6);
-            backdrop-filter: blur(20px);
-            -webkit-backdrop-filter: blur(20px);
-            border: 1px solid rgba(255, 255, 255, 0.08);
-            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
+            background: rgba(15, 23, 42, 0.65);
+            backdrop-filter: blur(24px);
+            -webkit-backdrop-filter: blur(24px);
+            border: 1px solid var(--glass-border);
+            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.6);
         }
 
         .whatsapp-bg {
-            background: linear-gradient(135deg, #25d366 0%, #128c7e 100%);
+            background: linear-gradient(135deg, #25d366 0%, #075e54 100%);
         }
 
         .text-gradient {
-            background: linear-gradient(to right, var(--emerald-bright), #10b981);
+            background: linear-gradient(to right, #4ade80, #10b981, #25d366);
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
         }
 
         @keyframes scan {
             0% { transform: translateY(-100vh); opacity: 0; }
-            50% { opacity: 0.6; }
+            50% { opacity: 1; }
             100% { transform: translateY(100vh); opacity: 0; }
         }
         .scanner-line {
             position: fixed;
-            top: 0; left: 0; right: 0; height: 3px;
-            background: linear-gradient(to right, transparent, var(--wa-green), var(--emerald-bright), var(--wa-green), transparent);
-            box-shadow: 0 0 30px var(--emerald-bright), 0 0 60px var(--wa-green);
+            top: 0; left: 0; right: 0; height: 4px;
+            background: linear-gradient(to right, transparent, var(--wa-green), #fff, var(--wa-green), transparent);
+            box-shadow: 0 0 40px var(--wa-green), 0 0 80px var(--emerald-bright);
             z-index: 100;
             pointer-events: none;
-            animation: scan 3s infinite ease-in-out;
+            animation: scan 2.5s infinite linear;
             display: none;
         }
         .scanning .scanner-line { display: block; }
 
-        /* Scrollbar tática */
-        ::-webkit-scrollbar { width: 6px; }
+        /* Custom Scrollbar */
+        ::-webkit-scrollbar { width: 8px; }
         ::-webkit-scrollbar-track { background: #020617; }
         ::-webkit-scrollbar-thumb { 
             background: #1e293b; 
             border-radius: 10px; 
+            border: 2px solid #020617;
         }
         ::-webkit-scrollbar-thumb:hover { background: var(--wa-green); }
 
         .animate-slide-up {
-            animation: slideUp 0.7s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+            animation: slideUp 0.8s cubic-bezier(0.16, 1, 0.3, 1) forwards;
         }
         @keyframes slideUp {
-            from { opacity: 0; transform: translateY(30px); }
+            from { opacity: 0; transform: translateY(50px); }
             to { opacity: 1; transform: translateY(0); }
         }
-
-        /* Efeito de glitch sutil para estados de erro */
-        .animate-shake {
-            animation: shake 0.4s cubic-bezier(.36,.07,.19,.97) both;
+        
+        .animate-pulse-subtle {
+            animation: pulse-subtle 2s infinite ease-in-out;
         }
-        @keyframes shake {
-            10%, 90% { transform: translate3d(-1px, 0, 0); }
-            20%, 80% { transform: translate3d(2px, 0, 0); }
-            30%, 50%, 70% { transform: translate3d(-3px, 0, 0); }
-            40%, 60% { transform: translate3d(3px, 0, 0); }
+        @keyframes pulse-subtle {
+            0%, 100% { opacity: 0.4; }
+            50% { opacity: 0.8; }
         }
     </style>
 <script type="importmap">

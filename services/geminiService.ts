@@ -15,27 +15,27 @@ export const huntGroupsStream = async (
   const apiKey = process.env.API_KEY;
   
   if (!apiKey) {
-    onUpdate({ error: "ERRO CRÍTICO: Chave de API não configurada no servidor Radar.", done: true });
+    onUpdate({ error: "CONEXÃO NEGADA: O Radar To-Ligado requer uma chave de autenticação válida para operar.", done: true });
     return;
   }
 
   const ai = new GoogleGenAI({ apiKey });
   
-  const prompt = `VOCÊ É O "RADAR TO-LIGADO V5" - MOTOR DE INTELIGÊNCIA EM COMUNIDADES.
-MISSÃO: Localizar links de convite ATIVOS e VERIFICADOS para o tema: "${keyword}".
+  const prompt = `SISTEMA DE INTERCEPÇÃO DE DADOS PÚBLICOS - RADAR TO-LIGADO V6.
+ALVO: Links de convite de grupos de WhatsApp sobre: "${keyword}".
 
-PROTOCOLO DE OPERAÇÃO:
-1. USE GOOGLE SEARCH para varrer diretórios (ex: whatsappgrupos.com, gruposwhats.app, reddit), redes sociais (Instagram, Twitter, Facebook) e fóruns.
-2. EXTRAIA APENAS links que sigam o padrão exato: chat.whatsapp.com/INVITE_CODE.
-3. FILTRAGEM: Ignore sites de notícias ou artigos que não contenham convites diretos.
+DIRETRIZES DE MINERAÇÃO:
+1. PESQUISA: Varra ativamente diretórios de indexação de grupos (ex: whatsappgrupos.com, gruposwhats.app, linkdogrupo.com), redes sociais (X/Twitter, Instagram, Reddit) e fóruns de nicho.
+2. FILTRO: Capture EXCLUSIVAMENTE links no formato chat.whatsapp.com/INVITE_CODE.
+3. CONTEÚDO: Identifique o nome do grupo e uma breve descrição do propósito.
 
-FORMATO DE RESPOSTA (UMA LINHA POR GRUPO):
-NOME: [Nome do Grupo] | LINK: [URL chat.whatsapp.com/...] | DESC: [Resumo objetivo] | CAT: [Nicho Específico]
+ESTRUTURA DE RESPOSTA OBRIGATÓRIA (UMA POR LINHA):
+GRUPO:[Nome] | LINK:[URL Completa] | DESC:[Breve resumo] | CAT:[Categoria de Nicho]
 
-REGRAS DE OURO:
-- NÃO adicione introduções como "Aqui estão os resultados".
-- NÃO adicione conclusões.
-- Se não encontrar nada, responda estritamente: "SINAL_ZERO_DETECTADO".`;
+RESTRIÇÕES SEVERAS:
+- PROIBIDO introduções, comentários ou saudações.
+- PROIBIDO repetir links.
+- Se não houver detecção clara, retorne apenas: "SINAL_INEXISTENTE".`;
 
   try {
     const responseStream = await ai.models.generateContentStream({
@@ -51,13 +51,13 @@ REGRAS DE OURO:
     const processedLinks = new Set<string>();
 
     for await (const chunk of responseStream) {
-      // Captura de fontes (Grounding)
+      // Processamento de Grounding (Fontes)
       const candidates = chunk.candidates?.[0];
       if (candidates?.groundingMetadata?.groundingChunks) {
         const sources = candidates.groundingMetadata.groundingChunks
           .filter((c: any) => c.web && c.web.uri)
           .map((c: any) => ({
-            title: c.web.title || "Fonte do Radar",
+            title: c.web.title || "Diretório Web",
             uri: c.web.uri
           }));
         if (sources.length > 0) onUpdate({ sources });
@@ -66,8 +66,8 @@ REGRAS DE OURO:
       const chunkText = chunk.text || "";
       fullText += chunkText;
 
-      if (fullText.includes("SINAL_ZERO_DETECTADO")) {
-        onUpdate({ error: "O Radar não captou sinais de grupos ativos para este termo nos satélites públicos.", done: true });
+      if (fullText.includes("SINAL_INEXISTENTE")) {
+        onUpdate({ error: "O Radar não encontrou comunidades ativas para este termo nas redes públicas no momento.", done: true });
         return;
       }
 
@@ -82,16 +82,16 @@ REGRAS DE OURO:
           if (!processedLinks.has(url)) {
             processedLinks.add(url);
             
-            const nameMatch = line.match(/NOME:\s*(.*?)\s*\|/i);
-            const descMatch = line.match(/DESC:\s*(.*?)\s*\|/i);
-            const catMatch = line.match(/CAT:\s*(.*)/i);
+            const nameMatch = line.match(/GRUPO:\s*\[?(.*?)\]?\s*\|/i);
+            const descMatch = line.match(/DESC:\s*\[?(.*?)\]?\s*\|/i);
+            const catMatch = line.match(/CAT:\s*\[?(.*?)\]?$/i);
 
             onUpdate({
               group: {
                 id: `wh-${Math.random().toString(36).substring(2, 9)}`,
-                name: (nameMatch ? nameMatch[1] : "Grupo Encontrado").trim(),
+                name: (nameMatch ? nameMatch[1] : "Comunidade Detectada").trim(),
                 url,
-                description: (descMatch ? descMatch[1] : "Extraído via varredura profunda To-Ligado.").trim(),
+                description: (descMatch ? descMatch[1] : "Link interceptado via motor de busca profunda To-Ligado.").trim(),
                 category: (catMatch ? catMatch[1] : "Geral").trim(),
                 status: 'verifying',
                 relevanceScore: 100,
@@ -104,9 +104,9 @@ REGRAS DE OURO:
     }
     onUpdate({ done: true });
   } catch (error: any) {
-    console.error("Critical Failure:", error);
+    console.error("Critical Radar Failure:", error);
     onUpdate({ 
-      error: "SINAL INTERROMPIDO: Interferência na conexão com os satélites To-Ligado.", 
+      error: "INSTABILIDADE DE SINAL: Houve uma falha na comunicação com os satélites de busca. Tente novamente.", 
       done: true 
     });
   }
