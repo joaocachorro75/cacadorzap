@@ -15,28 +15,27 @@ export const huntGroupsStream = async (
   const apiKey = process.env.API_KEY;
   
   if (!apiKey) {
-    onUpdate({ error: "SISTEMA BLOQUEADO: Credenciais de acesso To-Ligado não detectadas. Verifique a configuração do servidor.", done: true });
+    onUpdate({ error: "ERRO DE CREDENCIAIS: O sistema não conseguiu validar sua chave de acesso To-Ligado. Por favor, tente novamente mais tarde.", done: true });
     return;
   }
 
   const ai = new GoogleGenAI({ apiKey });
   
-  const prompt = `[PROTOCOLO DE EXTRAÇÃO RADAR V11.0]
-STATUS: OPERAÇÃO DE BUSCA PROFUNDA ATIVA.
-ALVO: Links de convite de grupos de WhatsApp (chat.whatsapp.com) para o nicho: "${keyword}".
+  const prompt = `[PROTOCOLO ELITE RADAR V11.0]
+ALVO: Interceptar links de convite ativos (chat.whatsapp.com) focados no nicho: "${keyword}".
 
-ESTRATÉGIA DE VARREDURA:
-1. DIRETÓRIOS E AGREGADORES: Priorize whatsappgrupos.com, gruposwhats.app e linkdogrupo.com.
-2. INDEXAÇÃO DE REDES: Localize convites em posts recentes do X (Twitter), Reddit (r/WhatsAppGroups) e fóruns de nicho.
-3. FILTRAGEM DE ELITE: Verifique a relevância e frescor dos dados. Capture apenas links operacionais.
+DIRETIVAS OPERACIONAIS:
+1. VARREDURA GLOBAL: Explore diretórios de alta densidade como whatsappgrupos.com, linkdogrupo.com e agregadores de redes sociais.
+2. EXTRAÇÃO TÁTICA: Identifique o nome oficial do grupo, uma descrição funcional e sua categoria principal.
+3. FILTRAGEM DE PRECISÃO: Capture apenas links que correspondam ao padrão de convite do WhatsApp.
 
-REQUISITOS DE SAÍDA (FORMATO RÍGIDO - UMA LINHA POR REGISTRO):
-ENTRY:[Nome do Grupo] | LINK:[URL] | DESC:[Resumo de 12 palavras] | TAG:[Nicho]
+FORMATO DE RESPOSTA (UMA LINHA POR REGISTRO):
+ENTRY:[Nome do Grupo] | LINK:[URL] | DESC:[Resumo de 12 palavras] | TAG:[Categoria]
 
-LIMITAÇÕES OPERACIONAIS:
-- NÃO inclua conversas ou textos introdutórios.
-- NÃO repita links capturados.
-- Se nenhuma comunidade válida for detectada após varredura total, retorne: "SIGNAL_LOST_TOTAL".`;
+REGRAS:
+- PROIBIDO incluir introduções ou avisos.
+- PROIBIDO repetir links.
+- Se não houver sinais ativos, retorne: "SIGNAL_LOST_TOTAL".`;
 
   try {
     const responseStream = await ai.models.generateContentStream({
@@ -67,7 +66,7 @@ LIMITAÇÕES OPERACIONAIS:
       fullText += chunkText;
 
       if (fullText.includes("SIGNAL_LOST_TOTAL")) {
-        onUpdate({ error: "Sinal Interrompido: Nenhuma comunidade verificada foi localizada nos diretórios públicos para este critério.", done: true });
+        onUpdate({ error: "Sinal Interrompido: Nenhuma comunidade verificada foi localizada nos radares públicos para este termo.", done: true });
         return;
       }
 
@@ -106,7 +105,7 @@ LIMITAÇÕES OPERACIONAIS:
   } catch (error: any) {
     console.error("Critical Failure:", error);
     onUpdate({ 
-      error: "ANOMALIA NO NÚCLEO: Ocorreu uma interrupção na comunicação com a rede de busca. Tente restabelecer o radar.", 
+      error: "FALHA DE SINCRONIA: Tivemos um problema ao conectar com a rede de busca global. Reinicie o radar.", 
       done: true 
     });
   }
