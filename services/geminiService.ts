@@ -15,28 +15,29 @@ export const huntGroupsStream = async (
   const apiKey = process.env.API_KEY;
   
   if (!apiKey) {
-    onUpdate({ error: "SISTEMA BLOQUEADO: Credenciais de busca não identificadas no servidor.", done: true });
+    onUpdate({ error: "SISTEMA BLOQUEADO: Credenciais de autenticação To-Ligado não detectadas no ambiente.", done: true });
     return;
   }
 
   const ai = new GoogleGenAI({ apiKey });
   
-  const prompt = `[RADAR TO-LIGADO INTELLIGENCE V8.0]
-COMANDO: Localizar comunidades ATIVAS do WhatsApp para: "${keyword}".
+  const prompt = `[RADAR TO-LIGADO INTELLIGENCE V8.5]
+ESTADO: OPERAÇÃO DE BUSCA PROFUNDA ATIVA.
+ALVO: Interceptar convites ATIVOS e VERIFICÁVEIS de grupos do WhatsApp focados em: "${keyword}".
 
-PROTOCOLO DE RASTREAMENTO:
-1. NÚCLEO WEB: Extraia convites de diretórios (whatsappgrupos.com, linkdogrupo.com, gruposwhats.app).
-2. INTELIGÊNCIA SOCIAL: Procure em posts recentes do Reddit, Twitter e Facebook.
-3. FILTRAGEM: Apenas links chat.whatsapp.com/[InviteCode] válidos.
-4. METADADOS: Capture nome real, categoria e uma descrição concisa do objetivo.
+ESTRATÉGIA DE VARREDURA:
+1. DIRETÓRIOS WEB: Varra intensivamente whatsappgrupos.com, linkdogrupo.com, gruposwhats.app e diretórios regionais.
+2. FONTES SOCIAIS: Identifique links compartilhados recentemente em perfis públicos do Instagram, threads do Reddit e posts do X (Twitter).
+3. VALIDAÇÃO TÉCNICA: Capture apenas links que correspondam estritamente ao padrão: chat.whatsapp.com/[InviteID].
+4. EXTRAÇÃO DE CONTEXTO: Determine o nome real, a categoria de nicho e uma descrição tática do grupo.
 
-ESTRUTURA DE SAÍDA (OBRIGATÓRIO):
-DATA:[Nome] | LINK:[URL] | DESC:[Resumo] | TAG:[Categoria]
+FORMATO DE RESPOSTA (ESTRITAMENTE UMA LINHA POR REGISTRO):
+DATA:[Nome do Grupo] | LINK:[URL] | DESC:[Breve resumo do propósito] | TAG:[Categoria]
 
 REGRAS DE EXECUÇÃO:
-- Proibido qualquer texto extra além da estrutura DATA.
-- Proibido repetir links já encontrados.
-- Se não houver sinal claro após varredura profunda, retorne: SIGNAL_LOSS_TOTAL.`;
+- NÃO inclua conversas, explicações ou notas de rodapé.
+- NÃO repita links captados em varreduras anteriores.
+- Se nenhuma comunidade de alta relevância for detectada, retorne: SIGNAL_LOSS_TOTAL.`;
 
   try {
     const responseStream = await ai.models.generateContentStream({
@@ -57,7 +58,7 @@ REGRAS DE EXECUÇÃO:
         const sources = candidates.groundingMetadata.groundingChunks
           .filter((c: any) => c.web && c.web.uri)
           .map((c: any) => ({
-            title: c.web.title || "Diretório Interceptado",
+            title: c.web.title || "Fonte Interceptada",
             uri: c.web.uri
           }));
         if (sources.length > 0) onUpdate({ sources });
@@ -67,7 +68,7 @@ REGRAS DE EXECUÇÃO:
       fullText += chunkText;
 
       if (fullText.includes("SIGNAL_LOSS_TOTAL")) {
-        onUpdate({ error: "Frequência Inativa: O radar não detectou comunidades públicas recentes com este termo.", done: true });
+        onUpdate({ error: "Sinal Fraco: O radar não conseguiu decodificar comunidades ativas para este termo nos satélites públicos agora.", done: true });
         return;
       }
 
@@ -88,10 +89,10 @@ REGRAS DE EXECUÇÃO:
 
             onUpdate({
               group: {
-                id: `track-${Math.random().toString(36).substring(2, 11)}`,
-                name: (nameMatch ? nameMatch[1] : "Comunidade Localizada").trim(),
+                id: `track-v85-${Math.random().toString(36).substring(2, 11)}`,
+                name: (nameMatch ? nameMatch[1] : "Comunidade Identificada").trim(),
                 url,
-                description: (descMatch ? descMatch[1] : "Link interceptado via rede de inteligência artificial To-Ligado.").trim(),
+                description: (descMatch ? descMatch[1] : "Descrição extraída via processamento de linguagem natural To-Ligado.").trim(),
                 category: (tagMatch ? tagMatch[1] : "Geral").trim(),
                 status: 'verifying',
                 relevanceScore: 100,
@@ -106,7 +107,7 @@ REGRAS DE EXECUÇÃO:
   } catch (error: any) {
     console.error("Critical Engine Failure:", error);
     onUpdate({ 
-      error: "ANOMALIA NO NÚCLEO: Houve uma sobrecarga no sistema de busca profunda. Tente novamente.", 
+      error: "ANOMALIA NO NÚCLEO: Houve uma interrupção na comunicação com o motor de busca profunda. Tente novamente em alguns segundos.", 
       done: true 
     });
   }
