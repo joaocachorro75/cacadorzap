@@ -12,22 +12,22 @@ export const huntGroupsStream = async (
   keyword: string, 
   onUpdate: (update: StreamUpdate) => void
 ): Promise<void> => {
-  // Inicialização segura com a chave de ambiente
   const ai = new GoogleGenAI({ apiKey: process.env.API_KEY || "" });
   
-  const prompt = `VOCÊ É O "RADAR TO-LIGADO", O SISTEMA DE BUSCA MAIS AVANÇADO DO MUNDO.
-  Sua tarefa é encontrar o NÚMERO MÁXIMO ABSOLUTO de links de convite para grupos de WhatsApp sobre: "${keyword}".
+  const prompt = `VOCÊ É O "RADAR TO-LIGADO", UM SISTEMA DE BUSCA DE ELITE ESPECIALIZADO EM INDEXAÇÃO DE COMUNIDADES DIGITAIS.
   
-  CRITÉRIOS DE BUSCA EXTREMA:
-  1. Use o Google Search para vasculhar diretórios de 2024 e 2025.
-  2. Procure em comunidades do Facebook, links no Twitter, bio do Instagram, fóruns Reddit e agregadores de grupos.
-  3. Extraia links no padrão: chat.whatsapp.com/INVITE_CODE.
-  4. NÃO PARE nos primeiros resultados. Eu quero uma lista exaustiva.
+  MISSÃO ATUAL: Localizar o MAIOR NÚMERO POSSÍVEL de links de convite ativos para grupos de WhatsApp relacionados a: "${keyword}".
   
-  REQUISITO DE RESPOSTA (JSON-LIKE PER LINE):
-  NOME: [Nome Real] | LINK: [URL Completa] | DESC: [Resumo] | CAT: [Categoria]
+  INSTRUÇÕES OPERACIONAIS:
+  1. Varra agressivamente diretórios públicos, redes sociais (X, Facebook, Instagram), fóruns (Reddit, Quora) e índices de grupos de 2024 e 2025.
+  2. Identifique links no formato exato: chat.whatsapp.com/INVITE_CODE.
+  3. Seja EXAUSTIVO e persistente. Não se limite aos primeiros resultados; explore profundamente os resultados de busca.
+  4. Extraia apenas links de GRUPOS (não aceite links wa.me de contatos individuais).
   
-  MANTENHA A BUSCA ATÉ ESGOTAR AS FONTES.`;
+  FORMATO DE SAÍDA (ESTRITAMENTE UMA LINHA POR GRUPO):
+  NOME: [Nome do Grupo] | LINK: [URL Completa] | DESC: [O que é o grupo] | CAT: [Categoria do Grupo]
+  
+  Não inclua saudações ou explicações. Apenas os dados estruturados conforme solicitado. Comece agora.`;
 
   try {
     const responseStream = await ai.models.generateContentStream({
@@ -35,7 +35,7 @@ export const huntGroupsStream = async (
       contents: prompt,
       config: {
         tools: [{ googleSearch: {} }],
-        temperature: 0.2,
+        temperature: 0.1,
       },
     });
 
@@ -43,13 +43,13 @@ export const huntGroupsStream = async (
     const processedLinks = new Set<string>();
 
     for await (const chunk of responseStream) {
-      // Processamento de Fontes (Grounding)
+      // Processamento de Grounding (Fontes)
       const candidates = chunk.candidates?.[0];
       if (candidates?.groundingMetadata?.groundingChunks) {
         const sources = candidates.groundingMetadata.groundingChunks
           .filter((c: any) => c.web && c.web.uri)
           .map((c: any) => ({
-            title: c.web.title || "Resultado Web",
+            title: c.web.title || "Fonte de Dados",
             uri: c.web.uri
           }));
         if (sources.length > 0) onUpdate({ sources });
@@ -76,10 +76,10 @@ export const huntGroupsStream = async (
             onUpdate({
               group: {
                 id: `wh-${Math.random().toString(36).substring(2, 9)}`,
-                name: (nameMatch ? nameMatch[1] : "Grupo Identificado").trim(),
+                name: (nameMatch ? nameMatch[1] : "Grupo Encontrado").trim(),
                 url,
-                description: (descMatch ? descMatch[1] : "Link capturado via Radar To-Ligado.").trim(),
-                category: (catMatch ? catMatch[1] : "Comunidade").trim(),
+                description: (descMatch ? descMatch[1] : "Indexado pelo Radar To-Ligado.").trim(),
+                category: (catMatch ? catMatch[1] : "Geral").trim(),
                 status: 'verifying',
                 relevanceScore: 100,
                 verifiedAt: Date.now()
@@ -91,10 +91,10 @@ export const huntGroupsStream = async (
     }
     onUpdate({ done: true });
   } catch (error: any) {
-    console.error("Erro no Radar:", error);
-    onUpdate({ 
-      error: "O radar encontrou uma zona de sombra. Verifique sua API_KEY ou tente novamente.", 
-      done: true 
-    });
+    console.error("Erro no huntGroupsStream:", error);
+    const errorMessage = error?.message?.includes("API_KEY") 
+      ? "Chave de API inválida ou não configurada." 
+      : "O radar encontrou uma zona de sombra. Tente novamente mais tarde.";
+    onUpdate({ error: errorMessage, done: true });
   }
 };

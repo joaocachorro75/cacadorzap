@@ -40,6 +40,7 @@ const App: React.FC = () => {
     setSources([]);
     setHasSearched(true);
     
+    // Incrementa buscas totais nas estatísticas
     setStats(prev => ({ ...prev, totalSearches: prev.totalSearches + 1 }));
 
     try {
@@ -85,7 +86,7 @@ const App: React.FC = () => {
               <div className="mb-8 px-6 py-4 glass rounded-[2rem] border-green-500/20">
                 <div className="flex items-center gap-3 mb-3">
                   <div className="w-2 h-2 bg-green-500 rounded-full animate-pulse"></div>
-                  <span className="text-[10px] font-black text-slate-400 uppercase tracking-widest">Fontes de Grounding Localizadas:</span>
+                  <span className="text-[10px] font-black text-slate-400 uppercase tracking-widest">Fontes de Pesquisa Localizadas:</span>
                 </div>
                 <div className="flex flex-wrap gap-2">
                   {sources.map((s, i) => (
@@ -121,11 +122,11 @@ const App: React.FC = () => {
                       <span className="text-5xl font-black text-white italic tracking-tighter leading-none">
                         {results.length}
                       </span>
-                      <span className="text-[10px] font-black text-green-500 uppercase tracking-widest mt-1">Links Válidos</span>
+                      <span className="text-[10px] font-black text-green-500 uppercase tracking-widest mt-1">Grupos Capturados</span>
                     </div>
                     <div className="h-12 w-px bg-slate-800 hidden md:block"></div>
                     <h2 className="text-xl font-black text-slate-200 uppercase tracking-tight italic">
-                      Resultados da Varredura
+                      Resultados em Tempo Real
                     </h2>
                   </div>
                   
@@ -136,7 +137,7 @@ const App: React.FC = () => {
                         <div className="w-1 h-3 bg-green-500 animate-bounce [animation-delay:0.2s]"></div>
                         <div className="w-1 h-3 bg-green-500 animate-bounce [animation-delay:0.4s]"></div>
                       </div>
-                      <span className="text-green-500 text-[9px] font-black uppercase tracking-tighter">Explorando Indexadores...</span>
+                      <span className="text-green-500 text-[9px] font-black uppercase tracking-tighter">Sincronizando Radar...</span>
                     </div>
                   )}
                 </div>
@@ -157,16 +158,16 @@ const App: React.FC = () => {
                   Radar <span className="text-gradient">To-Ligado</span>
                 </h2>
                 <p className="text-slate-400 max-w-xl mx-auto mb-10 font-medium px-4 leading-relaxed">
-                  Conecte-se com o futuro. Nossa inteligência artificial varre a web em tempo real para encontrar comunidades ativas e exclusivas para você.
+                  Busca exaustiva em indexadores globais para encontrar comunidades ativas e exclusivas. Digite uma palavra-chave para iniciar a varredura.
                 </p>
                 <div className="flex justify-center gap-12 opacity-30">
                   <div className="text-center">
                     <div className="text-2xl font-bold text-white tracking-tighter">2025</div>
-                    <div className="text-[9px] uppercase font-black tracking-widest">Database</div>
+                    <div className="text-[9px] uppercase font-black tracking-widest">Dataset</div>
                   </div>
                   <div className="text-center">
-                    <div className="text-2xl font-bold text-white tracking-tighter">0.3s</div>
-                    <div className="text-[9px] uppercase font-black tracking-widest">Latency</div>
+                    <div className="text-2xl font-bold text-white tracking-tighter">100%</div>
+                    <div className="text-[9px] uppercase font-black tracking-widest">Real-time</div>
                   </div>
                 </div>
               </div>
@@ -192,8 +193,8 @@ const App: React.FC = () => {
         )}
       </div>
       <footer className="py-12 border-t border-white/5 text-center mt-auto bg-black/20">
-        <p className="text-[10px] text-slate-600 font-bold uppercase tracking-[0.4em] mb-2">Powered by To-Ligado Search Engine</p>
-        <p className="text-[9px] text-slate-800 font-medium px-4">Esta ferramenta utiliza IA generativa para indexar informações públicas da web.</p>
+        <p className="text-[10px] text-slate-600 font-bold uppercase tracking-[0.4em] mb-2">Powered by To-Ligado Intelligence</p>
+        <p className="text-[9px] text-slate-800 font-medium px-4">Esta aplicação utiliza IA avançada para mineração de dados em tempo real em fontes públicas.</p>
       </footer>
     </div>
   );

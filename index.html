@@ -53,15 +53,20 @@
             animation: pulse-soft 2s infinite ease-in-out;
         }
 
-        .custom-scrollbar::-webkit-scrollbar {
-            width: 4px;
+        /* Barra de rolagem personalizada */
+        ::-webkit-scrollbar {
+            width: 8px;
         }
-        .custom-scrollbar::-webkit-scrollbar-track {
-            background: transparent;
+        ::-webkit-scrollbar-track {
+            background: var(--bg-deep);
         }
-        .custom-scrollbar::-webkit-scrollbar-thumb {
-            background: rgba(37, 211, 102, 0.2);
+        ::-webkit-scrollbar-thumb {
+            background: #1e293b;
             border-radius: 10px;
+            border: 2px solid var(--bg-deep);
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: #334155;
         }
     </style>
 <script type="importmap">
