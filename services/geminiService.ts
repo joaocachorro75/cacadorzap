@@ -24,20 +24,19 @@ export const huntGroupsStream = async (
 
   const ai = new GoogleGenAI({ apiKey });
   
-  // Prompt otimizado para extração massiva e diversificada
   const prompt = `[SISTEMA DE INTERCEPTAÇÃO TO-LIGADO V15.5 - MODO MASSIVO]
 OBJETIVO: Extração do MAIOR NÚMERO POSSÍVEL de links de convite do WhatsApp para: "${keyword}".
 
-REQUISITOS DE VOLUME:
-1. Não pare nos primeiros resultados. Explore diretórios de grupos, postagens de redes sociais e logs de chats.
-2. Identifique variações de convites (chat.whatsapp.com/INVITE_CODE).
-3. Busque por termos relacionados para ampliar o alcance se os resultados diretos forem escassos.
+ESTRATÉGIA DE BUSCA:
+1. Analise diretórios, blogs, redes sociais (Twitter, Instagram, Facebook) e fóruns.
+2. Busque por variações como "link de grupo", "zap zap", "whatsapp invitation".
+3. Tente encontrar pelo menos 50 links reais de convite (chat.whatsapp.com).
 
-FORMATO DE RETORNO (RIGOROSO):
-Uma linha por grupo encontrado seguindo este padrão:
-G:[NOME DO GRUPO] | L:[LINK COMPLETO] | D:[DESCRICAO BREVE] | T:[CATEGORIA]
+FORMATO DE RETORNO (OBRIGATÓRIO):
+Retorne cada grupo em uma linha nova usando exatamente este formato:
+G:[NOME DO GRUPO] | L:[LINK DE CONVITE COMPLETO] | D:[DESCRICAO] | T:[CATEGORIA]
 
-NÃO ADICIONE TEXTO DE INTRODUÇÃO OU CONCLUSÃO. APENAS OS DADOS BRUTOS.`;
+SEM TEXTO ADICIONAL. APENAS OS DADOS BRUTOS.`;
 
   try {
     const responseStream = await ai.models.generateContentStream({
@@ -45,7 +44,7 @@ NÃO ADICIONE TEXTO DE INTRODUÇÃO OU CONCLUSÃO. APENAS OS DADOS BRUTOS.`;
       contents: prompt,
       config: {
         tools: [{ googleSearch: {} }],
-        temperature: 0.2, // Um pouco mais de temperatura para diversidade de busca
+        temperature: 0.3,
       },
     });
 
@@ -53,13 +52,13 @@ NÃO ADICIONE TEXTO DE INTRODUÇÃO OU CONCLUSÃO. APENAS OS DADOS BRUTOS.`;
     const processedLinks = new Set<string>();
 
     for await (const chunk of responseStream) {
-      // Processamento de Grounding para transparência de fontes
+      // Extração de fontes para o HUD
       const candidates = chunk.candidates?.[0];
       if (candidates?.groundingMetadata?.groundingChunks) {
         const sources = candidates.groundingMetadata.groundingChunks
           .filter((c: any) => c.web && c.web.uri)
           .map((c: any) => ({
-            title: c.web.title || "Fonte Detectada",
+            title: c.web.title || "Fonte de Dados",
             uri: c.web.uri
           }));
         if (sources.length > 0) onUpdate({ sources });
@@ -72,7 +71,6 @@ NÃO ADICIONE TEXTO DE INTRODUÇÃO OU CONCLUSÃO. APENAS OS DADOS BRUTOS.`;
       fullText = lines.pop() || ""; 
 
       for (const line of lines) {
-        // Regex aprimorada para detectar links de convite
         const urlMatch = line.match(/chat\.whatsapp\.com\/[a-zA-Z0-9_-]{12,}/i);
         
         if (urlMatch) {
@@ -82,15 +80,14 @@ NÃO ADICIONE TEXTO DE INTRODUÇÃO OU CONCLUSÃO. APENAS OS DADOS BRUTOS.`;
             
             const nameMatch = line.match(/G:\s*(.*?)\s*\|/i);
             const descMatch = line.match(/D:\s*(.*?)\s*\|/i);
-            const tagMatch = line.match(/T:\s*(.*?)$/i);
 
             onUpdate({
               group: {
                 id: `wa-${Math.random().toString(36).substring(2, 9)}`,
-                name: (nameMatch ? nameMatch[1] : "Grupo Radar").trim(),
+                name: (nameMatch ? nameMatch[1] : "Grupo Encontrado").trim(),
                 url,
-                description: (descMatch ? descMatch[1] : "Encontrado via varredura neural profunda.").trim(),
-                category: (tagMatch ? tagMatch[1] : keyword).trim(),
+                description: (descMatch ? descMatch[1] : "Interceptado via Radar To-Ligado.").trim(),
+                category: keyword,
                 status: 'verifying',
                 relevanceScore: 100,
                 verifiedAt: Date.now()
