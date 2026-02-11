@@ -11,11 +11,9 @@ const GroupCard: React.FC<GroupCardProps> = ({ group, onVerified }) => {
 
   useEffect(() => {
     if (status === 'verifying') {
-      // Delay tático ajustado para simular handshake real com o servidor
-      const delay = 3000 + Math.random() * 4000;
+      const delay = 2500 + Math.random() * 3500;
       const timer = setTimeout(() => {
-        // Taxa de sucesso refinada baseada em frescor de dados (94%)
-        const isValid = Math.random() > 0.06; 
+        const isValid = Math.random() > 0.07; 
         
         if (isValid) {
           setStatus('active');
@@ -45,7 +43,13 @@ const GroupCard: React.FC<GroupCardProps> = ({ group, onVerified }) => {
   if (status === 'dead') return null;
 
   return (
-    <div className="glass rounded-[1.5rem] p-6 flex flex-col transition-all duration-500 hover:shadow-[0_0_80px_rgba(37,211,102,0.15)] border border-white/5 hover:border-green-500/40 relative overflow-hidden group min-h-[460px] animate-slide-up">
+    <div className="glass rounded-[1.5rem] p-6 flex flex-col transition-all duration-500 hover:shadow-[0_0_80px_rgba(37,211,102,0.2)] border border-white/5 hover:border-green-500/50 relative overflow-hidden group min-h-[480px] animate-slide-up">
+      {/* HUD Corners */}
+      <div className="absolute top-0 left-0 w-4 h-4 border-t-2 border-l-2 border-green-500/30 rounded-tl-xl"></div>
+      <div className="absolute top-0 right-0 w-4 h-4 border-t-2 border-r-2 border-green-500/30 rounded-tr-xl"></div>
+      <div className="absolute bottom-0 left-0 w-4 h-4 border-b-2 border-l-2 border-green-500/30 rounded-bl-xl"></div>
+      <div className="absolute bottom-0 right-0 w-4 h-4 border-b-2 border-r-2 border-green-500/30 rounded-br-xl"></div>
+
       {/* Subtle Glow on Hover */}
       <div className="absolute -top-24 -right-24 w-64 h-64 bg-green-500/5 rounded-full blur-[100px] group-hover:bg-green-500/10 transition-all duration-1000"></div>
 
@@ -58,48 +62,48 @@ const GroupCard: React.FC<GroupCardProps> = ({ group, onVerified }) => {
             </div>
           </div>
           <div className="space-y-3">
-            <h4 className="text-white/50 font-mono-tech text-[10px] tracking-[0.4em] uppercase animate-pulse">Varrendo Link...</h4>
+            <h4 className="text-white/50 font-mono-tech text-[10px] tracking-[0.4em] uppercase animate-pulse">Analise Espectral...</h4>
             <div className="h-[2px] w-32 bg-white/5 rounded-full overflow-hidden mx-auto">
-              <div className="h-full bg-green-500 animate-[loading_5s_ease-in-out_infinite]"></div>
+              <div className="h-full bg-green-500 animate-[loading_4s_ease-in-out_infinite]"></div>
             </div>
           </div>
         </div>
       ) : (
         <>
           <div className="flex justify-between items-start mb-8 relative z-10">
-            <div className="w-14 h-14 rounded-xl bg-white/5 border border-white/10 flex items-center justify-center text-green-400 group-hover:bg-green-500/20 group-hover:text-white transition-all duration-500">
-              <i className={`fas ${getCategoryIcon(group.category)} text-2xl`}></i>
+            <div className="w-16 h-16 rounded-2xl bg-slate-900/50 border border-white/10 flex items-center justify-center text-green-500 group-hover:bg-green-500/20 group-hover:text-white transition-all duration-500 shadow-xl">
+              <i className={`fas ${getCategoryIcon(group.category)} text-3xl`}></i>
             </div>
             <div className="flex flex-col items-end">
-              <div className="flex items-center gap-2 px-3 py-1 bg-green-500/10 rounded-full border border-green-500/20 mb-2">
+              <div className="flex items-center gap-2 px-3 py-1 bg-green-500/20 rounded-lg border border-green-500/30 mb-2">
                 <span className="w-1.5 h-1.5 bg-green-500 rounded-full animate-ping"></span>
-                <span className="text-green-400 text-[9px] font-black uppercase tracking-widest">Ativo</span>
+                <span className="text-green-400 text-[10px] font-black uppercase tracking-widest">Ativo</span>
               </div>
-              <span className="text-[9px] text-slate-500 font-mono-tech uppercase tracking-tighter bg-black/30 px-2 py-1 rounded-lg border border-white/5">{group.category}</span>
+              <span className="text-[10px] text-slate-400 font-mono-tech uppercase tracking-tighter bg-black/50 px-3 py-1.5 rounded-lg border border-white/10">{group.category}</span>
             </div>
           </div>
 
-          <h3 className="text-lg md:text-xl font-black text-white mb-3 line-clamp-2 leading-tight group-hover:text-green-400 transition-colors h-14 italic tracking-tight relative z-10">
+          <h3 className="text-xl md:text-2xl font-black text-white mb-4 line-clamp-2 leading-tight group-hover:text-green-400 transition-colors h-16 italic tracking-tight relative z-10">
             {group.name}
           </h3>
 
-          <p className="text-slate-400 text-sm line-clamp-4 leading-relaxed mb-8 font-medium relative z-10 opacity-70 group-hover:opacity-100 transition-opacity">
+          <p className="text-slate-400 text-sm line-clamp-4 leading-relaxed mb-10 font-medium relative z-10 opacity-70 group-hover:opacity-100 transition-opacity">
             {group.description}
           </p>
 
-          <div className="mt-auto pt-6 border-t border-white/10 space-y-5 relative z-10">
-             <div className="bg-black/50 rounded-xl px-4 py-3 flex items-center justify-between border border-white/5 group/link">
-                <span className="text-[10px] text-slate-500 font-mono truncate max-w-[140px] group-hover/link:text-green-400 transition-colors">{group.url.replace('https://', '')}</span>
-                <i className="fas fa-link text-green-500/20 text-[10px]"></i>
+          <div className="mt-auto pt-8 border-t border-white/10 space-y-6 relative z-10">
+             <div className="bg-black/60 rounded-xl px-5 py-4 flex items-center justify-between border border-white/5 group/link">
+                <span className="text-[11px] text-slate-500 font-mono truncate max-w-[150px] group-hover/link:text-green-400 transition-colors">{group.url.replace('https://', '')}</span>
+                <i className="fas fa-satellite text-green-500/20 text-xs"></i>
              </div>
              <a
               href={group.url}
               target="_blank"
               rel="noopener noreferrer"
-              className="whatsapp-bg hover:scale-[1.02] active:scale-95 text-white w-full py-4 rounded-xl text-[11px] font-black uppercase tracking-[0.3em] transition-all flex items-center justify-center gap-3 shadow-lg shadow-green-500/10"
+              className="whatsapp-bg hover:scale-[1.03] active:scale-95 text-white w-full py-5 rounded-2xl text-[12px] font-black uppercase tracking-[0.4em] transition-all flex items-center justify-center gap-4 shadow-2xl shadow-green-500/20 border border-white/10"
             >
-              Acessar Canal
-              <i className="fas fa-chevron-right text-[9px] group-hover:translate-x-1 transition-transform"></i>
+              Interceptar Convite
+              <i className="fas fa-crosshairs text-[12px] group-hover:rotate-45 transition-transform"></i>
             </a>
           </div>
         </>

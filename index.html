@@ -13,9 +13,9 @@
             --wa-green: #25d366;
             --wa-dark: #075e54;
             --emerald-accent: #10b981;
-            --bg-deep: #020617;
-            --glass-border: rgba(255, 255, 255, 0.08);
-            --glass-bg: rgba(15, 23, 42, 0.7);
+            --bg-deep: #01040a;
+            --glass-border: rgba(255, 255, 255, 0.05);
+            --glass-bg: rgba(13, 17, 23, 0.8);
         }
 
         body {
@@ -25,8 +25,19 @@
             margin: 0;
             overflow-x: hidden;
             background-image: 
-                radial-gradient(circle at 50% -10%, #0f172a 0%, #020617 100%);
+                radial-gradient(circle at 50% -10%, #0f172a 0%, #01040a 100%);
             background-attachment: fixed;
+        }
+
+        /* HUD Frame Effect */
+        body::before {
+            content: "";
+            position: fixed;
+            inset: 0;
+            border: 1px solid rgba(37, 211, 102, 0.05);
+            pointer-events: none;
+            z-index: 1001;
+            box-shadow: inset 0 0 100px rgba(0,0,0,0.8);
         }
 
         /* Subtle Scanlines */
@@ -34,19 +45,19 @@
             content: " ";
             position: fixed;
             top: 0; left: 0; bottom: 0; right: 0;
-            background: linear-gradient(rgba(18, 16, 16, 0) 50%, rgba(0, 0, 0, 0.05) 50%);
+            background: linear-gradient(rgba(18, 16, 16, 0) 50%, rgba(0, 0, 0, 0.1) 50%);
             z-index: 1000;
             background-size: 100% 4px;
             pointer-events: none;
-            opacity: 0.15;
+            opacity: 0.2;
         }
 
         .glass {
             background: var(--glass-bg);
-            backdrop-filter: blur(20px) saturate(160%);
-            -webkit-backdrop-filter: blur(20px) saturate(160%);
+            backdrop-filter: blur(25px) saturate(180%);
+            -webkit-backdrop-filter: blur(25px) saturate(180%);
             border: 1px solid var(--glass-border);
-            box-shadow: 0 20px 50px -10px rgba(0, 0, 0, 0.5);
+            box-shadow: 0 25px 60px -15px rgba(0, 0, 0, 0.7);
         }
 
         .whatsapp-bg {
@@ -61,15 +72,15 @@
 
         @keyframes scan-refined {
             0% { transform: translateY(-100%); opacity: 0; }
-            50% { opacity: 0.3; }
+            50% { opacity: 0.4; }
             100% { transform: translateY(100vh); opacity: 0; }
         }
         
         .scanner-line {
             position: fixed;
-            top: 0; left: 0; right: 0; height: 150px;
-            background: linear-gradient(to bottom, transparent, rgba(37, 211, 102, 0.05), rgba(37, 211, 102, 0.15));
-            border-bottom: 1px solid rgba(37, 211, 102, 0.4);
+            top: 0; left: 0; right: 0; height: 200px;
+            background: linear-gradient(to bottom, transparent, rgba(37, 211, 102, 0.02), rgba(37, 211, 102, 0.2));
+            border-bottom: 2px solid rgba(37, 211, 102, 0.6);
             z-index: 100;
             pointer-events: none;
             opacity: 0;
@@ -78,11 +89,11 @@
         
         .scanning .scanner-line { 
             opacity: 1;
-            animation: scan-refined 3s infinite linear;
+            animation: scan-refined 2.5s infinite linear;
         }
 
-        ::-webkit-scrollbar { width: 6px; }
-        ::-webkit-scrollbar-track { background: #020617; }
+        ::-webkit-scrollbar { width: 5px; }
+        ::-webkit-scrollbar-track { background: #01040a; }
         ::-webkit-scrollbar-thumb { 
             background: #1e293b; 
             border-radius: 10px;
@@ -92,15 +103,24 @@
         .font-mono-tech { font-family: 'JetBrains Mono', monospace; }
         
         ::selection {
-            background: rgba(37, 211, 102, 0.3);
+            background: rgba(37, 211, 102, 0.4);
             color: white;
         }
 
         @keyframes slide-up-soft {
-            from { opacity: 0; transform: translateY(30px); }
+            from { opacity: 0; transform: translateY(40px); }
             to { opacity: 1; transform: translateY(0); }
         }
-        .animate-slide-up { animation: slide-up-soft 0.6s cubic-bezier(0.16, 1, 0.3, 1) forwards; }
+        .animate-slide-up { animation: slide-up-soft 0.7s cubic-bezier(0.16, 1, 0.3, 1) forwards; }
+
+        .hud-corner {
+            position: absolute;
+            width: 20px;
+            height: 20px;
+            border-color: rgba(37, 211, 102, 0.3);
+            border-style: solid;
+            pointer-events: none;
+        }
     </style>
 <script type="importmap">
 {
