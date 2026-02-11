@@ -40,9 +40,7 @@ const App: React.FC = () => {
     setSources([]);
     setHasSearched(true);
     
-    // Injeta classe no body para o efeito de scanner
     document.body.classList.add('scanning');
-    
     setStats(prev => ({ ...prev, totalSearches: prev.totalSearches + 1 }));
 
     try {
@@ -72,7 +70,7 @@ const App: React.FC = () => {
         }
       });
     } catch (err) {
-      setError("Interferência na rede To-Ligado. Tente novamente.");
+      setError("FALHA CRÍTICA: Não foi possível estabelecer conexão com o Radar.");
       setIsLoading(false);
       document.body.classList.remove('scanning');
     }
@@ -92,7 +90,7 @@ const App: React.FC = () => {
               <div className="mb-8 px-6 py-4 glass rounded-[2rem] border-green-500/20">
                 <div className="flex items-center gap-3 mb-3">
                   <div className="w-2 h-2 bg-green-500 rounded-full animate-pulse"></div>
-                  <span className="text-[10px] font-black text-slate-400 uppercase tracking-widest">Fontes de Grounding Ativas:</span>
+                  <span className="text-[10px] font-black text-slate-400 uppercase tracking-widest">Sinais Detectados em:</span>
                 </div>
                 <div className="flex flex-wrap gap-2">
                   {sources.slice(0, 10).map((s, i) => (
@@ -112,12 +110,12 @@ const App: React.FC = () => {
 
             {error && (
               <div className="p-6 glass border-red-500/40 rounded-3xl text-red-400 mb-8 flex items-center gap-4">
-                <i className="fas fa-radiation text-2xl animate-bounce"></i>
+                <i className="fas fa-satellite-dish text-2xl animate-bounce"></i>
                 <div className="flex-1">
-                  <h4 className="font-bold uppercase text-xs">Alerta do Radar</h4>
+                  <h4 className="font-bold uppercase text-xs">Aviso do Radar</h4>
                   <p className="text-[10px] opacity-70">{error}</p>
                 </div>
-                <button onClick={() => { setHasSearched(false); setError(null); }} className="text-[10px] font-black uppercase underline hover:text-white">Nova Busca</button>
+                <button onClick={() => { setHasSearched(false); setError(null); }} className="text-[10px] font-black uppercase underline hover:text-white">Limpar Busca</button>
               </div>
             )}
 
@@ -129,17 +127,17 @@ const App: React.FC = () => {
                       <span className="text-5xl font-black text-white italic tracking-tighter leading-none">
                         {results.length}
                       </span>
-                      <span className="text-[10px] font-black text-green-500 uppercase tracking-widest mt-1">Links Minerados</span>
+                      <span className="text-[10px] font-black text-green-500 uppercase tracking-widest mt-1">Links Interceptados</span>
                     </div>
                     <div className="h-12 w-px bg-slate-800 hidden md:block"></div>
                     <h2 className="text-xl font-black text-slate-200 uppercase tracking-tight italic">
-                      Transmissão de Dados
+                      Fluxo de Dados ao Vivo
                     </h2>
                   </div>
                   
                   {isLoading && (
                     <div className="flex items-center gap-3 bg-green-500/10 border border-green-500/20 px-4 py-2 rounded-2xl">
-                      <span className="text-green-500 text-[9px] font-black uppercase tracking-tighter animate-pulse">Sincronizando satélites...</span>
+                      <span className="text-green-500 text-[9px] font-black uppercase tracking-tighter animate-pulse">Sincronizando com Satélites To-Ligado...</span>
                     </div>
                   )}
                 </div>
@@ -160,16 +158,16 @@ const App: React.FC = () => {
                   Radar <span className="text-gradient">To-Ligado</span>
                 </h2>
                 <p className="text-slate-400 max-w-xl mx-auto mb-10 font-medium px-4 leading-relaxed">
-                  Sistema avançado de detecção de comunidades. Varremos a web profunda em busca de links de convite ativos e verificados em tempo real.
+                  Sistema de inteligência para localização de comunidades. Varremos indexadores públicos e redes sociais em busca de links verificados.
                 </p>
                 <div className="flex justify-center gap-12 opacity-30">
                   <div className="text-center">
-                    <div className="text-2xl font-bold text-white tracking-tighter">2025</div>
-                    <div className="text-[9px] uppercase font-black tracking-widest">Database</div>
+                    <div className="text-2xl font-bold text-white tracking-tighter">2024.12</div>
+                    <div className="text-[9px] uppercase font-black tracking-widest">Engine Ver.</div>
                   </div>
                   <div className="text-center">
                     <div className="text-2xl font-bold text-white tracking-tighter">100%</div>
-                    <div className="text-[9px] uppercase font-black tracking-widest">Automatizado</div>
+                    <div className="text-[9px] uppercase font-black tracking-widest">Secure Crawl</div>
                   </div>
                 </div>
               </div>
@@ -196,7 +194,7 @@ const App: React.FC = () => {
       </div>
       <footer className="py-12 border-t border-white/5 text-center mt-auto bg-black/20">
         <p className="text-[10px] text-slate-600 font-bold uppercase tracking-[0.4em] mb-2">Powered by To-Ligado.com Intelligence</p>
-        <p className="text-[9px] text-slate-800 font-medium px-4">Esta ferramenta utiliza IA generativa e crawling em tempo real para indexação de dados públicos.</p>
+        <p className="text-[9px] text-slate-800 font-medium px-4">Esta ferramenta é um experimento de mineração de dados públicos usando IA generativa.</p>
       </footer>
     </div>
   );

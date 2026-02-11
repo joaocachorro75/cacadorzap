@@ -12,22 +12,28 @@ export const huntGroupsStream = async (
   keyword: string, 
   onUpdate: (update: StreamUpdate) => void
 ): Promise<void> => {
-  // Inicialização segura - Garante que o processo não quebre se process.env não estiver totalmente mapeado
-  const apiKey = typeof process !== 'undefined' ? process.env.API_KEY : '';
-  const ai = new GoogleGenAI({ apiKey: apiKey || "" });
+  const apiKey = process.env.API_KEY;
+  if (!apiKey) {
+    onUpdate({ error: "ERRO DE SISTEMA: Chave de API não localizada nas variáveis de ambiente.", done: true });
+    return;
+  }
+
+  const ai = new GoogleGenAI({ apiKey });
   
-  const prompt = `ACT AS "RADAR TO-LIGADO" DEEP CRAWLER.
-TARGET: WhatsApp Group Invite Links for "${keyword}".
+  const prompt = `VOCÊ É O "RADAR TO-LIGADO" - MOTOR DE BUSCA DE COMUNIDADES.
+ALVO: Links de convite ativos para grupos de WhatsApp sobre: "${keyword}".
 
-SCAN PROTOCOL:
-1. Search across group directories, social media profiles (X, FB, IG), and forum threads (Reddit/Quora).
-2. ONLY capture links starting with 'chat.whatsapp.com/'.
-3. MANDATORY: Find the most recent links from 2024 to 2025.
-4. Output format MUST be one line per group:
-NOME: [Name] | LINK: [URL] | DESC: [Short Purpose] | CAT: [Category]
+PROTOCOLO DE EXTRAÇÃO:
+1. Varra diretórios, fóruns, redes sociais e índices de grupos de 2024 e 2025.
+2. Identifique URLs que seguem o padrão: chat.whatsapp.com/INVITE_CODE.
+3. GERE EXCLUSIVAMENTE DADOS ESTRUTURADOS. NADA DE CONVERSA.
 
-CRITICAL: NO CONVERSATION. NO INTROS. ONLY DATA.
-If no links found, output: "SIGNAL_NOT_FOUND".`;
+FORMATO DE SAÍDA (UMA LINHA POR GRUPO):
+NOME: [Nome do Grupo] | LINK: [URL chat.whatsapp.com/...] | DESC: [Resumo do propósito] | CAT: [Categoria]
+
+REGRAS:
+- Não inclua saudações.
+- Se não encontrar nada, responda: "STATUS: SINAL_ZUMBI".`;
 
   try {
     const responseStream = await ai.models.generateContentStream({
@@ -43,13 +49,13 @@ If no links found, output: "SIGNAL_NOT_FOUND".`;
     const processedLinks = new Set<string>();
 
     for await (const chunk of responseStream) {
-      // Grounding / Fontes
+      // Extração de Grounding (Fontes)
       const candidates = chunk.candidates?.[0];
       if (candidates?.groundingMetadata?.groundingChunks) {
         const sources = candidates.groundingMetadata.groundingChunks
           .filter((c: any) => c.web && c.web.uri)
           .map((c: any) => ({
-            title: c.web.title || "Indexador Web",
+            title: c.web.title || "Fonte Detectada",
             uri: c.web.uri
           }));
         if (sources.length > 0) onUpdate({ sources });
@@ -58,8 +64,8 @@ If no links found, output: "SIGNAL_NOT_FOUND".`;
       const chunkText = chunk.text || "";
       fullText += chunkText;
 
-      if (fullText.includes("SIGNAL_NOT_FOUND")) {
-        onUpdate({ error: "O radar não detectou sinais ativos para este termo.", done: true });
+      if (fullText.includes("SINAL_ZUMBI")) {
+        onUpdate({ error: "O Radar To-Ligado não encontrou sinais ativos para este termo.", done: true });
         return;
       }
 
@@ -70,7 +76,7 @@ If no links found, output: "SIGNAL_NOT_FOUND".`;
         const match = line.match(/chat\.whatsapp\.com\/[a-zA-Z0-9_-]{15,}/i);
         
         if (match) {
-          const url = match[0].startsWith('http') ? match[0].trim() : `https://${match[0].trim()}`;
+          const url = `https://${match[0].trim()}`;
           if (!processedLinks.has(url)) {
             processedLinks.add(url);
             
@@ -81,10 +87,10 @@ If no links found, output: "SIGNAL_NOT_FOUND".`;
             onUpdate({
               group: {
                 id: `wh-${Math.random().toString(36).substring(2, 9)}`,
-                name: (nameMatch ? nameMatch[1] : "Grupo Encontrado").trim(),
+                name: (nameMatch ? nameMatch[1] : "Grupo Identificado").trim(),
                 url,
-                description: (descMatch ? descMatch[1] : "Capturado via mineração To-Ligado.").trim(),
-                category: (catMatch ? catMatch[1] : "Comunidade").trim(),
+                description: (descMatch ? descMatch[1] : "Capturado via Varredura To-Ligado.").trim(),
+                category: (catMatch ? catMatch[1] : "Geral").trim(),
                 status: 'verifying',
                 relevanceScore: 100,
                 verifiedAt: Date.now()
@@ -96,9 +102,9 @@ If no links found, output: "SIGNAL_NOT_FOUND".`;
     }
     onUpdate({ done: true });
   } catch (error: any) {
-    console.error("Radar Error:", error);
+    console.error("Critical Radar Error:", error);
     onUpdate({ 
-      error: "Falha na conexão com o Radar To-Ligado. Verifique sua chave de acesso.", 
+      error: "ERRO DE CONEXÃO: O satélite To-Ligado falhou ao processar a requisição.", 
       done: true 
     });
   }
