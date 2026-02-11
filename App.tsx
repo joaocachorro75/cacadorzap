@@ -40,7 +40,7 @@ const App: React.FC = () => {
     setSources([]);
     setHasSearched(true);
     
-    // Incrementa buscas totais nas estatísticas
+    // Incrementa estatísticas de busca imediatamente
     setStats(prev => ({ ...prev, totalSearches: prev.totalSearches + 1 }));
 
     try {
@@ -68,7 +68,7 @@ const App: React.FC = () => {
         }
       });
     } catch (err) {
-      setError("Falha na conexão com o Radar To-Ligado.");
+      setError("Falha na conexão com o Radar To-Ligado. Verifique sua rede.");
       setIsLoading(false);
     }
   }, []);
@@ -86,10 +86,10 @@ const App: React.FC = () => {
               <div className="mb-8 px-6 py-4 glass rounded-[2rem] border-green-500/20">
                 <div className="flex items-center gap-3 mb-3">
                   <div className="w-2 h-2 bg-green-500 rounded-full animate-pulse"></div>
-                  <span className="text-[10px] font-black text-slate-400 uppercase tracking-widest">Fontes de Pesquisa Localizadas:</span>
+                  <span className="text-[10px] font-black text-slate-400 uppercase tracking-widest">Indexadores em Varredura:</span>
                 </div>
                 <div className="flex flex-wrap gap-2">
-                  {sources.map((s, i) => (
+                  {sources.slice(0, 8).map((s, i) => (
                     <a 
                       key={i} 
                       href={s.uri} 
@@ -97,7 +97,7 @@ const App: React.FC = () => {
                       rel="noreferrer" 
                       className="text-[10px] bg-white/5 border border-white/10 px-3 py-1.5 rounded-full text-slate-400 hover:text-green-400 hover:border-green-500/30 transition-all flex items-center gap-2"
                     >
-                      <i className="fas fa-globe text-[8px]"></i> {s.title.substring(0, 30)}...
+                      <i className="fas fa-link text-[8px]"></i> {s.title.substring(0, 25)}...
                     </a>
                   ))}
                 </div>
@@ -107,10 +107,11 @@ const App: React.FC = () => {
             {error && (
               <div className="p-6 glass border-red-500/40 rounded-3xl text-red-400 mb-8 flex items-center gap-4">
                 <i className="fas fa-satellite-dish text-2xl animate-bounce"></i>
-                <div>
+                <div className="flex-1">
                   <h4 className="font-bold uppercase text-xs">Interferência no Radar</h4>
                   <p className="text-[10px] opacity-70">{error}</p>
                 </div>
+                <button onClick={() => setHasSearched(false)} className="text-[10px] font-black uppercase underline hover:text-white">Limpar</button>
               </div>
             )}
 
@@ -126,7 +127,7 @@ const App: React.FC = () => {
                     </div>
                     <div className="h-12 w-px bg-slate-800 hidden md:block"></div>
                     <h2 className="text-xl font-black text-slate-200 uppercase tracking-tight italic">
-                      Resultados em Tempo Real
+                      Varredura em Tempo Real
                     </h2>
                   </div>
                   
@@ -137,12 +138,12 @@ const App: React.FC = () => {
                         <div className="w-1 h-3 bg-green-500 animate-bounce [animation-delay:0.2s]"></div>
                         <div className="w-1 h-3 bg-green-500 animate-bounce [animation-delay:0.4s]"></div>
                       </div>
-                      <span className="text-green-500 text-[9px] font-black uppercase tracking-tighter">Sincronizando Radar...</span>
+                      <span className="text-green-500 text-[9px] font-black uppercase tracking-tighter">Sincronizando com Satélites...</span>
                     </div>
                   )}
                 </div>
                 
-                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8">
+                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8 mb-20">
                   {results.map((group) => (
                     <GroupCard key={group.id} group={group} />
                   ))}
@@ -158,7 +159,7 @@ const App: React.FC = () => {
                   Radar <span className="text-gradient">To-Ligado</span>
                 </h2>
                 <p className="text-slate-400 max-w-xl mx-auto mb-10 font-medium px-4 leading-relaxed">
-                  Busca exaustiva em indexadores globais para encontrar comunidades ativas e exclusivas. Digite uma palavra-chave para iniciar a varredura.
+                  Realizamos uma varredura exaustiva em indexadores globais e redes sociais para encontrar comunidades ativas e exclusivas. Insira uma palavra-chave para iniciar a mineração.
                 </p>
                 <div className="flex justify-center gap-12 opacity-30">
                   <div className="text-center">
@@ -167,7 +168,7 @@ const App: React.FC = () => {
                   </div>
                   <div className="text-center">
                     <div className="text-2xl font-bold text-white tracking-tighter">100%</div>
-                    <div className="text-[9px] uppercase font-black tracking-widest">Real-time</div>
+                    <div className="text-[9px] uppercase font-black tracking-widest">Live Engine</div>
                   </div>
                 </div>
               </div>
@@ -193,8 +194,8 @@ const App: React.FC = () => {
         )}
       </div>
       <footer className="py-12 border-t border-white/5 text-center mt-auto bg-black/20">
-        <p className="text-[10px] text-slate-600 font-bold uppercase tracking-[0.4em] mb-2">Powered by To-Ligado Intelligence</p>
-        <p className="text-[9px] text-slate-800 font-medium px-4">Esta aplicação utiliza IA avançada para mineração de dados em tempo real em fontes públicas.</p>
+        <p className="text-[10px] text-slate-600 font-bold uppercase tracking-[0.4em] mb-2">Desenvolvido por To-Ligado Intelligence</p>
+        <p className="text-[9px] text-slate-800 font-medium px-4">Esta aplicação utiliza modelos de IA de última geração para indexação de dados públicos.</p>
       </footer>
     </div>
   );
