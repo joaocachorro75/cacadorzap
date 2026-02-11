@@ -14,20 +14,23 @@ export const huntGroupsStream = async (
 ): Promise<void> => {
   const ai = new GoogleGenAI({ apiKey: process.env.API_KEY || "" });
   
-  const prompt = `VOCÊ É O "RADAR TO-LIGADO", O SISTEMA DE BUSCA DE ELITE DO PORTAL TO-LIGADO.COM.
-  
-  SUA MISSÃO: Realizar uma varredura profunda e exaustiva na web para encontrar o MAIOR NÚMERO POSSÍVEL de links de convite ativos para grupos de WhatsApp sobre: "${keyword}".
-  
-  PROTOCOLO DE BUSCA:
-  1. Utilize o Google Search para indexar diretórios, fóruns (Reddit, Quora), redes sociais (X, Facebook Groups, Bio de Instagram) e listas de transmissão públicas.
-  2. Priorize links no formato: chat.whatsapp.com/INVITE_CODE.
-  3. Explore resultados de 2024 e 2025 para garantir links que ainda não foram revogados.
-  4. Seja persistente: extraia o máximo de links únicos que encontrar.
-  
-  FORMATO ESTRUTURADO DE RESPOSTA (UMA LINHA POR GRUPO):
-  NOME: [Título Curto] | LINK: [URL chat.whatsapp.com/...] | DESC: [Resumo do propósito] | CAT: [Categoria: Vendas, Hobby, Tech, etc]
-  
-  RESTRIÇÃO: Não escreva introduções, comentários ou conclusões. Apenas as linhas de dados. Se não encontrar nada, informe que a varredura não detectou sinais.`;
+  const prompt = `ATUAR COMO O "RADAR TO-LIGADO" (SISTEMA DE MINERAÇÃO DE DADOS DE ALTA PRECISÃO).
+
+MISSÃO: Localizar e extrair TODOS os links de convite ativos para grupos de WhatsApp sobre "${keyword}".
+
+PROTOCOLOS DE BUSCA:
+1. PESQUISA EXAUSTIVA: Utilize o Google Search para varrer diretórios de grupos, comunidades em redes sociais (Twitter/X, Facebook, Bio de Instagram), fóruns de nicho (Reddit, Quora) e agregadores de links.
+2. FOCO EM ATIVIDADE: Dê prioridade a links postados ou atualizados entre 2024 e 2026.
+3. FILTRAGEM DE ELITE: Apenas links no formato 'chat.whatsapp.com/INVITE_CODE'. Ignore links de contatos individuais (wa.me).
+4. RECURSIVIDADE: Se encontrar um diretório, explore os links internos para maximizar o volume de resultados.
+
+FORMATO DE RESPOSTA (ESTRITAMENTE UMA LINHA POR RESULTADO):
+NOME: [Nome do Grupo] | LINK: [URL Completa] | DESC: [Resumo objetivo do grupo] | CAT: [Categoria exata]
+
+REGRAS CRÍTICAS:
+- Proibido introduções, feedbacks ou conclusões.
+- Saída apenas em formato de lista de dados.
+- Se a varredura for negativa, responda: "STATUS: SINAL NÃO DETECTADO".`;
 
   try {
     const responseStream = await ai.models.generateContentStream({
@@ -35,8 +38,8 @@ export const huntGroupsStream = async (
       contents: prompt,
       config: {
         tools: [{ googleSearch: {} }],
-        temperature: 0.15,
-        topP: 0.95
+        temperature: 0.1,
+        topP: 0.9,
       },
     });
 
@@ -44,13 +47,13 @@ export const huntGroupsStream = async (
     const processedLinks = new Set<string>();
 
     for await (const chunk of responseStream) {
-      // Extração de Grounding (Fontes da Web)
+      // Processamento de GroundingMetadata para exibir fontes reais
       const candidates = chunk.candidates?.[0];
       if (candidates?.groundingMetadata?.groundingChunks) {
         const sources = candidates.groundingMetadata.groundingChunks
           .filter((c: any) => c.web && c.web.uri)
           .map((c: any) => ({
-            title: c.web.title || "Fonte Detectada",
+            title: c.web.title || "Portal de Indexação",
             uri: c.web.uri
           }));
         if (sources.length > 0) onUpdate({ sources });
@@ -63,7 +66,11 @@ export const huntGroupsStream = async (
       fullText = lines.pop() || "";
 
       for (const line of lines) {
-        // Regex robusta para capturar o código do convite e o link
+        if (line.includes("STATUS: SINAL NÃO DETECTADO")) {
+            onUpdate({ error: "Nenhum sinal detectado para esta palavra-chave nos satélites atuais.", done: true });
+            return;
+        }
+
         const match = line.match(/(?:https?:\/\/)?chat\.whatsapp\.com\/([a-zA-Z0-9_-]{15,})/i);
         
         if (match) {
@@ -78,9 +85,9 @@ export const huntGroupsStream = async (
             onUpdate({
               group: {
                 id: `wh-${Math.random().toString(36).substring(2, 9)}`,
-                name: (nameMatch ? nameMatch[1] : "Grupo Localizado").trim(),
+                name: (nameMatch ? nameMatch[1] : "Grupo Identificado").trim(),
                 url,
-                description: (descMatch ? descMatch[1] : "Link interceptado pelo Radar To-Ligado.").trim(),
+                description: (descMatch ? descMatch[1] : "Capturado pelo fluxo de dados To-Ligado.").trim(),
                 category: (catMatch ? catMatch[1] : "Geral").trim(),
                 status: 'verifying',
                 relevanceScore: 100,
@@ -93,9 +100,9 @@ export const huntGroupsStream = async (
     }
     onUpdate({ done: true });
   } catch (error: any) {
-    console.error("Erro Crítico no Radar:", error);
-    let errorMsg = "O radar detectou uma interferência atmosférica (erro de conexão).";
-    if (error?.message?.includes("API_KEY")) errorMsg = "A autenticação do radar falhou (API_KEY ausente ou inválida).";
-    onUpdate({ error: errorMsg, done: true });
+    console.error("Falha na Operação Radar:", error);
+    let message = "Falha na conexão com os servidores de inteligência To-Ligado.";
+    if (error?.message?.includes("API_KEY")) message = "Erro de Autenticação: Chave de API expirada ou inválida.";
+    onUpdate({ error: message, done: true });
   }
 };

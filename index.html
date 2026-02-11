@@ -53,20 +53,21 @@
             animation: pulse-soft 2s infinite ease-in-out;
         }
 
-        /* Barra de rolagem personalizada */
+        /* Barra de rolagem personalizada refinada */
         ::-webkit-scrollbar {
-            width: 8px;
+            width: 10px;
         }
         ::-webkit-scrollbar-track {
-            background: var(--bg-deep);
+            background: rgba(2, 6, 23, 0.8);
         }
         ::-webkit-scrollbar-thumb {
-            background: #1e293b;
+            background: rgba(37, 211, 102, 0.4);
             border-radius: 10px;
-            border: 2px solid var(--bg-deep);
+            border: 3px solid var(--bg-deep);
+            transition: background 0.3s ease;
         }
         ::-webkit-scrollbar-thumb:hover {
-            background: #25d366;
+            background: rgba(37, 211, 102, 0.8);
         }
     </style>
 <script type="importmap">

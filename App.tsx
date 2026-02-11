@@ -40,7 +40,6 @@ const App: React.FC = () => {
     setSources([]);
     setHasSearched(true);
     
-    // Incrementa estatísticas de busca imediatamente
     setStats(prev => ({ ...prev, totalSearches: prev.totalSearches + 1 }));
 
     try {
@@ -68,7 +67,7 @@ const App: React.FC = () => {
         }
       });
     } catch (err) {
-      setError("Falha na conexão com o Radar To-Ligado. Verifique sua rede.");
+      setError("Falha na conexão com o Radar To-Ligado. Tente novamente em instantes.");
       setIsLoading(false);
     }
   }, []);
@@ -86,10 +85,10 @@ const App: React.FC = () => {
               <div className="mb-8 px-6 py-4 glass rounded-[2rem] border-green-500/20">
                 <div className="flex items-center gap-3 mb-3">
                   <div className="w-2 h-2 bg-green-500 rounded-full animate-pulse"></div>
-                  <span className="text-[10px] font-black text-slate-400 uppercase tracking-widest">Indexadores em Varredura:</span>
+                  <span className="text-[10px] font-black text-slate-400 uppercase tracking-widest">Ativos Sincronizados:</span>
                 </div>
                 <div className="flex flex-wrap gap-2">
-                  {sources.slice(0, 8).map((s, i) => (
+                  {sources.slice(0, 10).map((s, i) => (
                     <a 
                       key={i} 
                       href={s.uri} 
@@ -97,7 +96,7 @@ const App: React.FC = () => {
                       rel="noreferrer" 
                       className="text-[10px] bg-white/5 border border-white/10 px-3 py-1.5 rounded-full text-slate-400 hover:text-green-400 hover:border-green-500/30 transition-all flex items-center gap-2"
                     >
-                      <i className="fas fa-link text-[8px]"></i> {s.title.substring(0, 25)}...
+                      <i className="fas fa-satellite text-[8px]"></i> {s.title.substring(0, 25)}...
                     </a>
                   ))}
                 </div>
@@ -106,12 +105,12 @@ const App: React.FC = () => {
 
             {error && (
               <div className="p-6 glass border-red-500/40 rounded-3xl text-red-400 mb-8 flex items-center gap-4">
-                <i className="fas fa-satellite-dish text-2xl animate-bounce"></i>
+                <i className="fas fa-exclamation-triangle text-2xl animate-bounce"></i>
                 <div className="flex-1">
-                  <h4 className="font-bold uppercase text-xs">Interferência no Radar</h4>
+                  <h4 className="font-bold uppercase text-xs">Aviso do Sistema</h4>
                   <p className="text-[10px] opacity-70">{error}</p>
                 </div>
-                <button onClick={() => setHasSearched(false)} className="text-[10px] font-black uppercase underline hover:text-white">Limpar</button>
+                <button onClick={() => { setHasSearched(false); setError(null); }} className="text-[10px] font-black uppercase underline hover:text-white">Reiniciar</button>
               </div>
             )}
 
@@ -123,11 +122,11 @@ const App: React.FC = () => {
                       <span className="text-5xl font-black text-white italic tracking-tighter leading-none">
                         {results.length}
                       </span>
-                      <span className="text-[10px] font-black text-green-500 uppercase tracking-widest mt-1">Grupos Capturados</span>
+                      <span className="text-[10px] font-black text-green-500 uppercase tracking-widest mt-1">Sinais Captados</span>
                     </div>
                     <div className="h-12 w-px bg-slate-800 hidden md:block"></div>
                     <h2 className="text-xl font-black text-slate-200 uppercase tracking-tight italic">
-                      Varredura em Tempo Real
+                      Fluxo de Dados em Tempo Real
                     </h2>
                   </div>
                   
@@ -138,7 +137,7 @@ const App: React.FC = () => {
                         <div className="w-1 h-3 bg-green-500 animate-bounce [animation-delay:0.2s]"></div>
                         <div className="w-1 h-3 bg-green-500 animate-bounce [animation-delay:0.4s]"></div>
                       </div>
-                      <span className="text-green-500 text-[9px] font-black uppercase tracking-tighter">Sincronizando com Satélites...</span>
+                      <span className="text-green-500 text-[9px] font-black uppercase tracking-tighter">Minerando Indexadores...</span>
                     </div>
                   )}
                 </div>
@@ -159,16 +158,16 @@ const App: React.FC = () => {
                   Radar <span className="text-gradient">To-Ligado</span>
                 </h2>
                 <p className="text-slate-400 max-w-xl mx-auto mb-10 font-medium px-4 leading-relaxed">
-                  Realizamos uma varredura exaustiva em indexadores globais e redes sociais para encontrar comunidades ativas e exclusivas. Insira uma palavra-chave para iniciar a mineração.
+                  Tecnologia de ponta para mineração de comunidades ativas. Varremos fóruns, diretórios e redes sociais em busca dos melhores grupos para você.
                 </p>
                 <div className="flex justify-center gap-12 opacity-30">
                   <div className="text-center">
-                    <div className="text-2xl font-bold text-white tracking-tighter">2025</div>
-                    <div className="text-[9px] uppercase font-black tracking-widest">Dataset</div>
+                    <div className="text-2xl font-bold text-white tracking-tighter">2026</div>
+                    <div className="text-[9px] uppercase font-black tracking-widest">Update</div>
                   </div>
                   <div className="text-center">
                     <div className="text-2xl font-bold text-white tracking-tighter">100%</div>
-                    <div className="text-[9px] uppercase font-black tracking-widest">Live Engine</div>
+                    <div className="text-[9px] uppercase font-black tracking-widest">Auto-Scan</div>
                   </div>
                 </div>
               </div>
@@ -194,8 +193,8 @@ const App: React.FC = () => {
         )}
       </div>
       <footer className="py-12 border-t border-white/5 text-center mt-auto bg-black/20">
-        <p className="text-[10px] text-slate-600 font-bold uppercase tracking-[0.4em] mb-2">Desenvolvido por To-Ligado Intelligence</p>
-        <p className="text-[9px] text-slate-800 font-medium px-4">Esta aplicação utiliza modelos de IA de última geração para indexação de dados públicos.</p>
+        <p className="text-[10px] text-slate-600 font-bold uppercase tracking-[0.4em] mb-2">Powered by To-Ligado.com | Intelligence Unit</p>
+        <p className="text-[9px] text-slate-800 font-medium px-4">Utilizamos redes neurais e mineração de dados em tempo real para indexação pública.</p>
       </footer>
     </div>
   );
