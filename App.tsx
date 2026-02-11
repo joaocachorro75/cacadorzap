@@ -40,6 +40,9 @@ const App: React.FC = () => {
     setSources([]);
     setHasSearched(true);
     
+    // Injeta classe no body para o efeito de scanner
+    document.body.classList.add('scanning');
+    
     setStats(prev => ({ ...prev, totalSearches: prev.totalSearches + 1 }));
 
     try {
@@ -47,6 +50,7 @@ const App: React.FC = () => {
         if (update.error) {
           setError(update.error);
           setIsLoading(false);
+          document.body.classList.remove('scanning');
         }
         
         if (update.sources) {
@@ -64,16 +68,19 @@ const App: React.FC = () => {
         
         if (update.done) {
           setIsLoading(false);
+          document.body.classList.remove('scanning');
         }
       });
     } catch (err) {
-      setError("Falha na conexão com o Radar To-Ligado. Tente novamente em instantes.");
+      setError("Interferência na rede To-Ligado. Tente novamente.");
       setIsLoading(false);
+      document.body.classList.remove('scanning');
     }
   }, []);
 
   return (
     <div className="min-h-screen flex flex-col w-full selection:bg-green-500/30">
+      <div className="scanner-line"></div>
       <div className="flex-grow container mx-auto max-w-7xl px-4 py-8">
         <Header />
         
@@ -85,7 +92,7 @@ const App: React.FC = () => {
               <div className="mb-8 px-6 py-4 glass rounded-[2rem] border-green-500/20">
                 <div className="flex items-center gap-3 mb-3">
                   <div className="w-2 h-2 bg-green-500 rounded-full animate-pulse"></div>
-                  <span className="text-[10px] font-black text-slate-400 uppercase tracking-widest">Ativos Sincronizados:</span>
+                  <span className="text-[10px] font-black text-slate-400 uppercase tracking-widest">Fontes de Grounding Ativas:</span>
                 </div>
                 <div className="flex flex-wrap gap-2">
                   {sources.slice(0, 10).map((s, i) => (
@@ -105,12 +112,12 @@ const App: React.FC = () => {
 
             {error && (
               <div className="p-6 glass border-red-500/40 rounded-3xl text-red-400 mb-8 flex items-center gap-4">
-                <i className="fas fa-exclamation-triangle text-2xl animate-bounce"></i>
+                <i className="fas fa-radiation text-2xl animate-bounce"></i>
                 <div className="flex-1">
-                  <h4 className="font-bold uppercase text-xs">Aviso do Sistema</h4>
+                  <h4 className="font-bold uppercase text-xs">Alerta do Radar</h4>
                   <p className="text-[10px] opacity-70">{error}</p>
                 </div>
-                <button onClick={() => { setHasSearched(false); setError(null); }} className="text-[10px] font-black uppercase underline hover:text-white">Reiniciar</button>
+                <button onClick={() => { setHasSearched(false); setError(null); }} className="text-[10px] font-black uppercase underline hover:text-white">Nova Busca</button>
               </div>
             )}
 
@@ -122,22 +129,17 @@ const App: React.FC = () => {
                       <span className="text-5xl font-black text-white italic tracking-tighter leading-none">
                         {results.length}
                       </span>
-                      <span className="text-[10px] font-black text-green-500 uppercase tracking-widest mt-1">Sinais Captados</span>
+                      <span className="text-[10px] font-black text-green-500 uppercase tracking-widest mt-1">Links Minerados</span>
                     </div>
                     <div className="h-12 w-px bg-slate-800 hidden md:block"></div>
                     <h2 className="text-xl font-black text-slate-200 uppercase tracking-tight italic">
-                      Fluxo de Dados em Tempo Real
+                      Transmissão de Dados
                     </h2>
                   </div>
                   
                   {isLoading && (
                     <div className="flex items-center gap-3 bg-green-500/10 border border-green-500/20 px-4 py-2 rounded-2xl">
-                      <div className="flex gap-1">
-                        <div className="w-1 h-3 bg-green-500 animate-bounce"></div>
-                        <div className="w-1 h-3 bg-green-500 animate-bounce [animation-delay:0.2s]"></div>
-                        <div className="w-1 h-3 bg-green-500 animate-bounce [animation-delay:0.4s]"></div>
-                      </div>
-                      <span className="text-green-500 text-[9px] font-black uppercase tracking-tighter">Minerando Indexadores...</span>
+                      <span className="text-green-500 text-[9px] font-black uppercase tracking-tighter animate-pulse">Sincronizando satélites...</span>
                     </div>
                   )}
                 </div>
@@ -158,16 +160,16 @@ const App: React.FC = () => {
                   Radar <span className="text-gradient">To-Ligado</span>
                 </h2>
                 <p className="text-slate-400 max-w-xl mx-auto mb-10 font-medium px-4 leading-relaxed">
-                  Tecnologia de ponta para mineração de comunidades ativas. Varremos fóruns, diretórios e redes sociais em busca dos melhores grupos para você.
+                  Sistema avançado de detecção de comunidades. Varremos a web profunda em busca de links de convite ativos e verificados em tempo real.
                 </p>
                 <div className="flex justify-center gap-12 opacity-30">
                   <div className="text-center">
-                    <div className="text-2xl font-bold text-white tracking-tighter">2026</div>
-                    <div className="text-[9px] uppercase font-black tracking-widest">Update</div>
+                    <div className="text-2xl font-bold text-white tracking-tighter">2025</div>
+                    <div className="text-[9px] uppercase font-black tracking-widest">Database</div>
                   </div>
                   <div className="text-center">
                     <div className="text-2xl font-bold text-white tracking-tighter">100%</div>
-                    <div className="text-[9px] uppercase font-black tracking-widest">Auto-Scan</div>
+                    <div className="text-[9px] uppercase font-black tracking-widest">Automatizado</div>
                   </div>
                 </div>
               </div>
@@ -193,8 +195,8 @@ const App: React.FC = () => {
         )}
       </div>
       <footer className="py-12 border-t border-white/5 text-center mt-auto bg-black/20">
-        <p className="text-[10px] text-slate-600 font-bold uppercase tracking-[0.4em] mb-2">Powered by To-Ligado.com | Intelligence Unit</p>
-        <p className="text-[9px] text-slate-800 font-medium px-4">Utilizamos redes neurais e mineração de dados em tempo real para indexação pública.</p>
+        <p className="text-[10px] text-slate-600 font-bold uppercase tracking-[0.4em] mb-2">Powered by To-Ligado.com Intelligence</p>
+        <p className="text-[9px] text-slate-800 font-medium px-4">Esta ferramenta utiliza IA generativa e crawling em tempo real para indexação de dados públicos.</p>
       </footer>
     </div>
   );

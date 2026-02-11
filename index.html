@@ -45,29 +45,36 @@
             -webkit-text-fill-color: transparent;
         }
 
-        @keyframes pulse-soft {
-            0%, 100% { opacity: 1; }
-            50% { opacity: 0.7; }
+        @keyframes scan {
+            0% { transform: translateY(-100%); opacity: 0; }
+            50% { opacity: 0.5; }
+            100% { transform: translateY(100%); opacity: 0; }
         }
-        .animate-pulse-soft {
-            animation: pulse-soft 2s infinite ease-in-out;
+        .scanner-line {
+            position: fixed;
+            top: 0; left: 0; right: 0; height: 2px;
+            background: linear-gradient(to right, transparent, var(--wa-green), transparent);
+            z-index: 50;
+            pointer-events: none;
+            animation: scan 3s infinite linear;
+            display: none;
         }
+        .scanning .scanner-line { display: block; }
 
-        /* Barra de rolagem personalizada refinada */
+        /* Barra de rolagem premium */
         ::-webkit-scrollbar {
-            width: 10px;
+            width: 8px;
         }
         ::-webkit-scrollbar-track {
-            background: rgba(2, 6, 23, 0.8);
+            background: #020617;
         }
         ::-webkit-scrollbar-thumb {
-            background: rgba(37, 211, 102, 0.4);
+            background: #1e293b;
             border-radius: 10px;
-            border: 3px solid var(--bg-deep);
-            transition: background 0.3s ease;
+            border: 2px solid #020617;
         }
         ::-webkit-scrollbar-thumb:hover {
-            background: rgba(37, 211, 102, 0.8);
+            background: #25d366;
         }
     </style>
 <script type="importmap">
