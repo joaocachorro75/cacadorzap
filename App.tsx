@@ -70,7 +70,7 @@ const App: React.FC = () => {
         }
       });
     } catch (err) {
-      setError("FALHA CRÍTICA NO RADAR: Conexão interrompida com o núcleo de busca.");
+      setError("FALHA CRÍTICA NO SISTEMA: Perda de sincronia com a rede de busca neural.");
       setIsLoading(false);
       document.body.classList.remove('scanning');
     }
@@ -88,22 +88,22 @@ const App: React.FC = () => {
             <SearchBar onSearch={handleSearch} isLoading={isLoading && results.length === 0} />
 
             {sources.length > 0 && (
-              <div className="mb-14 px-8 py-7 glass rounded-[3rem] border-green-500/20 relative overflow-hidden">
-                <div className="absolute top-0 left-0 w-full h-[2px] bg-gradient-to-r from-transparent via-green-500/40 to-transparent"></div>
+              <div className="mb-14 px-8 py-7 glass rounded-[3rem] border-green-500/20 relative overflow-hidden group">
+                <div className="absolute top-0 left-0 w-full h-[2px] bg-gradient-to-r from-transparent via-green-500/60 to-transparent"></div>
                 <div className="flex items-center gap-4 mb-6">
                   <div className="w-2.5 h-2.5 bg-green-500 rounded-full animate-ping"></div>
-                  <span className="text-[11px] font-black text-white/60 uppercase tracking-[0.4em] font-mono-tech">Rede de Busca Expandida:</span>
+                  <span className="text-[11px] font-black text-white/70 uppercase tracking-[0.5em] font-mono-tech">Rede de Indexação Ativa:</span>
                 </div>
                 <div className="flex flex-wrap gap-3">
-                  {sources.slice(0, 18).map((s, i) => (
+                  {sources.slice(0, 15).map((s, i) => (
                     <a 
                       key={i} 
                       href={s.uri} 
                       target="_blank" 
                       rel="noreferrer" 
-                      className="text-[10px] bg-white/5 border border-white/10 px-5 py-2.5 rounded-2xl text-slate-400 hover:text-green-400 hover:border-green-500/40 transition-all flex items-center gap-3 group/link shadow-sm"
+                      className="text-[10px] bg-black/40 border border-white/10 px-5 py-2.5 rounded-2xl text-slate-400 hover:text-green-400 hover:border-green-500/50 transition-all flex items-center gap-3 group/link hover:shadow-2xl hover:shadow-green-500/10"
                     >
-                      <i className="fas fa-link text-[9px] opacity-40 group-hover/link:opacity-100 transition-opacity"></i> 
+                      <i className="fas fa-radar text-[9px] opacity-40 group-hover/link:opacity-100 group-hover/link:animate-pulse transition-opacity"></i> 
                       <span className="font-bold tracking-tight">{s.title.substring(0, 35)}</span>
                     </a>
                   ))}
@@ -112,19 +112,19 @@ const App: React.FC = () => {
             )}
 
             {error && (
-              <div className="p-12 glass border-red-500/30 rounded-[4rem] text-red-400 mb-14 flex flex-col md:flex-row items-center gap-10 animate-shake shadow-[0_0_80px_rgba(239,68,68,0.1)]">
-                <div className="w-24 h-24 bg-red-500/10 rounded-full flex items-center justify-center border border-red-500/20">
-                  <i className="fas fa-triangle-exclamation text-4xl animate-pulse"></i>
+              <div className="p-12 glass border-red-500/40 rounded-[4rem] text-red-400 mb-14 flex flex-col md:flex-row items-center gap-10 animate-shake shadow-[0_0_80px_rgba(239,68,68,0.15)]">
+                <div className="w-24 h-24 bg-red-500/10 rounded-full flex items-center justify-center border border-red-500/20 shadow-inner">
+                  <i className="fas fa-bolt text-4xl animate-pulse"></i>
                 </div>
                 <div className="flex-1 text-center md:text-left">
-                  <h4 className="font-black uppercase text-xl tracking-tighter mb-2 italic">Anomalia de Sinal Detectada</h4>
-                  <p className="text-sm opacity-70 font-medium leading-relaxed max-w-2xl">{error}</p>
+                  <h4 className="font-black uppercase text-2xl tracking-tighter mb-2 italic">Alerta de Anomalia</h4>
+                  <p className="text-sm md:text-base opacity-70 font-medium leading-relaxed max-w-2xl">{error}</p>
                 </div>
                 <button 
                   onClick={() => { setHasSearched(false); setError(null); }} 
-                  className="px-12 py-4.5 bg-white/5 hover:bg-white/10 rounded-3xl text-[12px] font-black uppercase tracking-[0.3em] border border-white/10 transition-all active:scale-95"
+                  className="px-12 py-5 bg-white/5 hover:bg-white/10 rounded-3xl text-[12px] font-black uppercase tracking-[0.4em] border border-white/10 transition-all active:scale-95 shadow-xl"
                 >
-                  Reiniciar Sistema
+                  Recuperar Sinal
                 </button>
               </div>
             )}
@@ -132,35 +132,35 @@ const App: React.FC = () => {
             {(isLoading || results.length > 0) && (
               <section className="mt-20">
                 <div className="flex flex-col md:flex-row justify-between items-start md:items-end mb-20 gap-10 px-8">
-                  <div className="flex items-center gap-12">
+                  <div className="flex items-center gap-14">
                     <div className="flex flex-col">
-                      <span className="text-9xl font-black text-white italic tracking-tighter leading-none drop-shadow-2xl">
+                      <span className="text-9xl font-black text-white italic tracking-tighter leading-none drop-shadow-[0_25px_25px_rgba(0,0,0,0.5)]">
                         {results.length}
                       </span>
-                      <span className="text-[12px] font-black text-green-500 uppercase tracking-[0.6em] mt-4 font-mono-tech">Comunidades</span>
+                      <span className="text-[13px] font-black text-green-500 uppercase tracking-[0.8em] mt-5 font-mono-tech">Registros</span>
                     </div>
-                    <div className="h-24 w-[2px] bg-white/5 hidden md:block"></div>
-                    <div className="max-w-[240px]">
-                      <h2 className="text-3xl font-black text-slate-100 uppercase tracking-tighter italic leading-[0.85]">
-                        Interceptação <br/> em Massa <br/> <span className="text-green-500">To-Ligado</span>
+                    <div className="h-28 w-[1px] bg-white/10 hidden md:block"></div>
+                    <div className="max-w-[260px]">
+                      <h2 className="text-3xl md:text-4xl font-black text-slate-100 uppercase tracking-tighter italic leading-[0.85]">
+                        Dados <br/> Interceptados <br/> <span className="text-green-500">Live</span>
                       </h2>
                     </div>
                   </div>
                   
                   {isLoading && (
-                    <div className="flex items-center gap-6 bg-green-500/5 border border-green-500/20 px-12 py-6 rounded-[2.5rem] shadow-inner relative overflow-hidden group">
+                    <div className="flex items-center gap-7 bg-green-500/10 border border-green-500/20 px-14 py-7 rounded-[3rem] shadow-2xl relative overflow-hidden">
                       <div className="absolute inset-0 bg-green-500/5 animate-pulse"></div>
-                      <div className="flex gap-3">
-                        <div className="w-2.5 h-8 bg-green-500 animate-bounce"></div>
-                        <div className="w-2.5 h-8 bg-green-500 animate-bounce [animation-delay:0.2s]"></div>
-                        <div className="w-2.5 h-8 bg-green-500 animate-bounce [animation-delay:0.4s]"></div>
+                      <div className="flex gap-3.5">
+                        <div className="w-3 h-10 bg-green-500 animate-[bounce_1s_infinite]"></div>
+                        <div className="w-3 h-10 bg-green-500 animate-[bounce_1s_infinite_0.2s]"></div>
+                        <div className="w-3 h-10 bg-green-500 animate-[bounce_1s_infinite_0.4s]"></div>
                       </div>
-                      <span className="text-green-500 text-[13px] font-black uppercase tracking-[0.4em] animate-pulse relative z-10">Minerando Dados...</span>
+                      <span className="text-green-500 text-[14px] font-black uppercase tracking-[0.5em] animate-pulse relative z-10">Escaneando...</span>
                     </div>
                   )}
                 </div>
                 
-                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-10 mb-48">
+                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-12 mb-56">
                   {results.map((group) => (
                     <GroupCard key={group.id} group={group} />
                   ))}
@@ -169,30 +169,30 @@ const App: React.FC = () => {
             )}
 
             {!hasSearched && (
-              <div className="mt-24 py-56 glass rounded-[8rem] text-center relative overflow-hidden group border-white/5 hover:border-green-500/30 transition-all duration-1000">
+              <div className="mt-24 py-64 glass rounded-[9rem] text-center relative overflow-hidden group border-white/5 hover:border-green-500/30 transition-all duration-1000 shadow-2xl">
                 <div className="absolute inset-0 bg-gradient-to-br from-green-500/10 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-1000"></div>
                 <div className="relative z-10 px-10">
-                  <div className="w-36 h-36 bg-slate-900 rounded-[3.5rem] flex items-center justify-center mx-auto mb-14 border border-slate-800 shadow-2xl group-hover:scale-110 group-hover:rotate-[15deg] transition-all duration-1000">
-                    <i className="fas fa-satellite text-7xl text-green-500 drop-shadow-[0_0_15px_rgba(37,211,102,0.6)]"></i>
+                  <div className="w-40 h-40 bg-slate-900 rounded-[4rem] flex items-center justify-center mx-auto mb-16 border border-slate-800 shadow-[0_35px_60px_-15px_rgba(0,0,0,0.6)] group-hover:scale-110 group-hover:rotate-[15deg] transition-all duration-1000">
+                    <i className="fas fa-radar text-7xl text-green-500 drop-shadow-[0_0_20px_rgba(37,211,102,0.8)] animate-pulse"></i>
                   </div>
-                  <h2 className="text-7xl md:text-[10rem] font-black text-white mb-12 italic uppercase tracking-tighter leading-none">
-                    Radar <span className="text-gradient">V7.0</span>
+                  <h2 className="text-7xl md:text-[11rem] font-black text-white mb-14 italic uppercase tracking-tighter leading-none">
+                    Radar <span className="text-gradient">V7.5</span>
                   </h2>
-                  <p className="text-slate-400 max-w-3xl mx-auto mb-24 font-medium text-xl md:text-3xl leading-relaxed opacity-80 tracking-tight">
-                    A ferramenta de inteligência definitiva para localização e validação de comunidades públicas do WhatsApp.
+                  <p className="text-slate-400 max-w-4xl mx-auto mb-28 font-medium text-xl md:text-3xl leading-relaxed opacity-80 tracking-tight px-6">
+                    O motor de inteligência mais potente para localização e validação de comunidades públicas em escala global.
                   </p>
-                  <div className="flex flex-col md:flex-row justify-center gap-12 md:gap-40 opacity-30 group-hover:opacity-100 transition-all duration-1000 grayscale group-hover:grayscale-0">
+                  <div className="flex flex-col md:flex-row justify-center gap-16 md:gap-48 opacity-40 group-hover:opacity-100 transition-all duration-1000 grayscale group-hover:grayscale-0">
                     <div className="text-center">
-                      <div className="text-6xl font-black text-white tracking-tighter italic font-mono-tech">0.1s</div>
-                      <div className="text-[12px] uppercase font-black tracking-[0.5em] mt-4 text-green-500">Latência Neural</div>
+                      <div className="text-7xl font-black text-white tracking-tighter italic font-mono-tech">0.08s</div>
+                      <div className="text-[13px] uppercase font-black tracking-[0.6em] mt-5 text-green-500">Delay de Núcleo</div>
                     </div>
                     <div className="text-center">
-                      <div className="text-6xl font-black text-white tracking-tighter italic font-mono-tech">∞</div>
-                      <div className="text-[12px] uppercase font-black tracking-[0.5em] mt-4 text-green-500">Escala de Busca</div>
+                      <div className="text-7xl font-black text-white tracking-tighter italic font-mono-tech">GLOBAL</div>
+                      <div className="text-[13px] uppercase font-black tracking-[0.6em] mt-5 text-green-500">Range de Varredura</div>
                     </div>
                     <div className="text-center">
-                      <div className="text-6xl font-black text-white tracking-tighter italic font-mono-tech">AI+</div>
-                      <div className="text-[12px] uppercase font-black tracking-[0.5em] mt-4 text-green-500">Verificação</div>
+                      <div className="text-7xl font-black text-white tracking-tighter italic font-mono-tech">100%</div>
+                      <div className="text-[13px] uppercase font-black tracking-[0.6em] mt-5 text-green-500">Neural Connect</div>
                     </div>
                   </div>
                 </div>
@@ -219,20 +219,20 @@ const App: React.FC = () => {
         )}
       </div>
 
-      <footer className="py-28 border-t border-white/5 text-center mt-auto bg-black/40 backdrop-blur-3xl">
-        <div className="container mx-auto max-w-5xl px-8">
-            <div className="w-16 h-[2px] bg-green-500/30 mx-auto mb-10"></div>
-            <p className="text-[13px] text-slate-500 font-black uppercase tracking-[1em] mb-10 animate-pulse-subtle">Infraestrutura To-Ligado Intelligence</p>
-            <div className="flex justify-center gap-16 mb-16 opacity-20 hover:opacity-100 transition-opacity duration-1000 grayscale hover:grayscale-0">
-               <i className="fab fa-whatsapp text-4xl"></i>
-               <i className="fas fa-fingerprint text-4xl"></i>
-               <i className="fas fa-brain text-4xl"></i>
-               <i className="fas fa-microchip text-4xl"></i>
+      <footer className="py-32 border-t border-white/5 text-center mt-auto bg-black/60 backdrop-blur-3xl">
+        <div className="container mx-auto max-w-6xl px-10">
+            <div className="w-24 h-[1px] bg-green-500/20 mx-auto mb-12"></div>
+            <p className="text-[14px] text-slate-500 font-black uppercase tracking-[1.2em] mb-12 animate-pulse-subtle">Sistemas Radar To-Ligado Intelligence</p>
+            <div className="flex justify-center gap-20 mb-20 opacity-20 hover:opacity-100 transition-opacity duration-1000 grayscale hover:grayscale-0">
+               <i className="fab fa-whatsapp text-5xl"></i>
+               <i className="fas fa-microchip text-5xl"></i>
+               <i className="fas fa-brain text-5xl"></i>
+               <i className="fas fa-satellite text-5xl"></i>
             </div>
-            <p className="text-[11px] text-slate-700 font-bold max-w-2xl mx-auto leading-loose uppercase tracking-[0.2em] italic mb-12">
-              Este sistema utiliza processamento de linguagem natural e ferramentas de busca em tempo real para indexar conteúdos públicos. O acesso a grupos é governado pelas políticas da plataforma WhatsApp.
+            <p className="text-[12px] text-slate-700 font-bold max-w-3xl mx-auto leading-loose uppercase tracking-[0.3em] italic mb-14">
+              O Caçador To-Ligado é uma plataforma de pesquisa automatizada. Não possuímos vínculo com os administradores das comunidades indexadas. Todas as conexões são de responsabilidade do usuário final.
             </p>
-            <div className="text-[10px] text-slate-800 font-black uppercase tracking-[0.5em] font-mono-tech">© 2024 RADAR TO-LIGADO - ALL SYSTEMS NOMINAL</div>
+            <div className="text-[11px] text-slate-800 font-black uppercase tracking-[0.6em] font-mono-tech border-t border-white/5 pt-10">© 2024-2025 RADAR TO-LIGADO - ALL SYSTEMS NOMINAL</div>
         </div>
       </footer>
     </div>
