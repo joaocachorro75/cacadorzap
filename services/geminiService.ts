@@ -6,10 +6,11 @@ export interface StreamUpdate {
   sources?: Array<{ title: string; uri: string }>;
   done?: boolean;
   error?: string;
+  rawError?: any;
 }
 
 /**
- * Motor de Busca Radar To-Ligado V15.5
+ * Motor de Busca Radar To-Ligado V15.5 - Diagnóstico Ativado
  */
 export const huntGroupsStream = async (
   keyword: string, 
@@ -18,25 +19,25 @@ export const huntGroupsStream = async (
   // O Vite injeta a variável via process.env configurada no vite.config.ts
   const apiKey = (process.env as any).API_KEY;
   
-  if (!apiKey || apiKey === "") {
-    onUpdate({ error: "ERRO CRÍTICO: Chave API não detectada no ambiente de build.", done: true });
+  if (!apiKey || apiKey === "" || apiKey === "undefined") {
+    onUpdate({ 
+      error: "ERRO DE AMBIENTE: A API_KEY não foi encontrada. Verifique as variáveis de ambiente no seu deploy.", 
+      done: true 
+    });
     return;
   }
 
   const ai = new GoogleGenAI({ apiKey });
   
   const prompt = `[SISTEMA DE INTERCEPTAÇÃO TO-LIGADO V15.5]
-OBJETIVO: Extração MASSIVA de links de convite do WhatsApp para: "${keyword}".
+OBJETIVO: Extração MASSIVA de links de convite do WhatsApp (chat.whatsapp.com) para o tema: "${keyword}".
 
 DIRETRIZES:
-1. Varra a web em busca de diretórios de grupos e convites públicos.
-2. Identifique o máximo possível de links reais (chat.whatsapp.com/...).
-3. Ignore links quebrados ou repetidos.
+1. Pesquise por convites públicos recentes.
+2. Retorne o nome do grupo e o link de convite.
 
-FORMATO DE RETORNO (BRUTO):
-G:[NOME DO GRUPO] | L:[LINK COMPLETO] | D:[DESCRICAO CURTA] | T:[CATEGORIA]
-
-Retorne apenas os dados, sem explicações.`;
+FORMATO:
+G:[NOME] | L:[LINK] | D:[DESCRIÇÃO]`;
 
   try {
     const responseStream = await ai.models.generateContentStream({
@@ -44,7 +45,7 @@ Retorne apenas os dados, sem explicações.`;
       contents: prompt,
       config: {
         tools: [{ googleSearch: {} }],
-        temperature: 0.2,
+        temperature: 0.1, // Menor temperatura = mais foco em fatos/links reais
       },
     });
 
@@ -83,9 +84,9 @@ Retorne apenas os dados, sem explicações.`;
             onUpdate({
               group: {
                 id: `wa-${Math.random().toString(36).substring(2, 9)}`,
-                name: (nameMatch ? nameMatch[1] : "Grupo Encontrado").trim(),
+                name: (nameMatch ? nameMatch[1] : "Grupo Detectado").trim(),
                 url,
-                description: (descMatch ? descMatch[1] : "Extraído via Radar Neural To-Ligado.").trim(),
+                description: (descMatch ? descMatch[1] : "Link interceptado via Radar Neural.").trim(),
                 category: keyword,
                 status: 'verifying',
                 relevanceScore: 100,
@@ -98,6 +99,20 @@ Retorne apenas os dados, sem explicações.`;
     }
     onUpdate({ done: true });
   } catch (error: any) {
-    onUpdate({ error: "SINAL INTERROMPIDO: Tente uma palavra-chave diferente ou verifique sua API Key.", done: true });
+    console.error("DEBUG RADAR:", error);
+    
+    let userFriendlyError = "FALHA NA INTERCEPTAÇÃO: ";
+    
+    if (error.message?.includes("API key not valid")) {
+      userFriendlyError += "Sua API Key do Google Gemini é inválida ou expirou.";
+    } else if (error.message?.includes("billing")) {
+      userFriendlyError += "A ferramenta de busca exige um projeto com faturamento (billing) ativo no Google Cloud.";
+    } else if (error.message?.includes("quota")) {
+      userFriendlyError += "Limite de requisições atingido. Aguarde um momento.";
+    } else {
+      userFriendlyError += `Erro técnico: ${error.message || "Erro desconhecido"}`;
+    }
+
+    onUpdate({ error: userFriendlyError, rawError: error, done: true });
   }
 };

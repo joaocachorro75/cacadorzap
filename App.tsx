@@ -69,8 +69,8 @@ const App: React.FC = () => {
           document.body.classList.remove('scanning');
         }
       });
-    } catch (err) {
-      setError("ERRO DE CONEXÃO: Falha ao estabelecer túnel de busca.");
+    } catch (err: any) {
+      setError(`ERRO DE CONEXÃO: ${err.message || "Falha ao estabelecer túnel de busca."}`);
       setIsLoading(false);
       document.body.classList.remove('scanning');
     }
@@ -104,9 +104,17 @@ const App: React.FC = () => {
             )}
 
             {error && (
-              <div className="p-8 glass border-red-500/30 rounded-3xl text-red-400 mb-12 flex items-center gap-6 animate-pulse">
-                <i className="fas fa-exclamation-triangle text-2xl"></i>
-                <p className="font-bold uppercase tracking-widest text-sm">{error}</p>
+              <div className="p-8 glass border-red-500/30 rounded-3xl text-red-400 mb-12 flex flex-col items-start gap-4 animate-slide-up">
+                <div className="flex items-center gap-4">
+                  <i className="fas fa-exclamation-triangle text-2xl"></i>
+                  <h3 className="font-black uppercase tracking-widest text-sm">Status da Interceptação: Falha</h3>
+                </div>
+                <p className="text-xs font-mono bg-black/30 p-4 rounded-xl border border-red-500/10 w-full">
+                  {error}
+                </p>
+                <p className="text-[10px] text-slate-500 italic">
+                  Dica: Verifique se sua API KEY tem saldo e se o recurso "Google Search" está habilitado no Google AI Studio.
+                </p>
               </div>
             )}
 
