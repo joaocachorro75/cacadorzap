@@ -11,7 +11,6 @@ const App: React.FC = () => {
   const [view, setView] = useState<'public' | 'admin-login' | 'admin-panel'>('public');
   const [results, setResults] = useState<WhatsAppGroup[]>([]);
   const [sources, setSources] = useState<Array<{title: string, uri: string}>>([]);
-  const [verifiedCount, setVerifiedCount] = useState(0);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [hasSearched, setHasSearched] = useState(false);
@@ -39,27 +38,36 @@ const App: React.FC = () => {
     setError(null);
     setResults([]);
     setSources([]);
-    setVerifiedCount(0);
     setHasSearched(true);
+    
+    setStats(prev => ({ ...prev, totalSearches: prev.totalSearches + 1 }));
 
     try {
       await huntGroupsStream(keyword, (update: StreamUpdate) => {
-        if (update.error) setError(update.error);
+        if (update.error) {
+          setError(update.error);
+          setIsLoading(false);
+        }
+        
         if (update.sources) {
           setSources(prev => {
             const existing = new Set(prev.map(p => p.uri));
-            const newOnes = update.sources!.filter(s => !existing.has(s.uri));
-            return [...prev, ...newOnes];
+            const unique = update.sources!.filter(s => !existing.has(s.uri));
+            return [...prev, ...unique];
           });
         }
+        
         if (update.group) {
           setResults(prev => [...prev, update.group as WhatsAppGroup]);
           setStats(s => ({ ...s, groupsFound: s.groupsFound + 1 }));
         }
-        if (update.done) setIsLoading(false);
+        
+        if (update.done) {
+          setIsLoading(false);
+        }
       });
     } catch (err) {
-      setError("Falha crítica no Radar To-Ligado.");
+      setError("Falha na conexão com o Radar To-Ligado.");
       setIsLoading(false);
     }
   }, []);
@@ -74,59 +82,118 @@ const App: React.FC = () => {
             <SearchBar onSearch={handleSearch} isLoading={isLoading && results.length === 0} />
 
             {sources.length > 0 && (
-              <div className="mb-8 px-4 py-3 glass rounded-2xl flex flex-wrap gap-3 items-center">
-                <span className="text-[9px] font-black text-slate-500 uppercase tracking-widest">Fontes de Pesquisa:</span>
-                {sources.slice(0, 5).map((s, i) => (
-                  <a key={i} href={s.uri} target="_blank" rel="noreferrer" className="text-[10px] text-green-400 hover:underline flex items-center gap-1">
-                    <i className="fas fa-link text-[8px]"></i> {s.title.substring(0, 20)}...
-                  </a>
-                ))}
+              <div className="mb-8 px-6 py-4 glass rounded-[2rem] border-green-500/20">
+                <div className="flex items-center gap-3 mb-3">
+                  <div className="w-2 h-2 bg-green-500 rounded-full animate-pulse"></div>
+                  <span className="text-[10px] font-black text-slate-400 uppercase tracking-widest">Fontes de Grounding Localizadas:</span>
+                </div>
+                <div className="flex flex-wrap gap-2">
+                  {sources.map((s, i) => (
+                    <a 
+                      key={i} 
+                      href={s.uri} 
+                      target="_blank" 
+                      rel="noreferrer" 
+                      className="text-[10px] bg-white/5 border border-white/10 px-3 py-1.5 rounded-full text-slate-400 hover:text-green-400 hover:border-green-500/30 transition-all flex items-center gap-2"
+                    >
+                      <i className="fas fa-globe text-[8px]"></i> {s.title.substring(0, 30)}...
+                    </a>
+                  ))}
+                </div>
               </div>
             )}
 
             {error && (
-              <div className="p-4 glass border-red-500/30 rounded-2xl text-red-400 mb-8 text-xs font-bold uppercase">
-                <i className="fas fa-exclamation-circle mr-2"></i> {error}
+              <div className="p-6 glass border-red-500/40 rounded-3xl text-red-400 mb-8 flex items-center gap-4">
+                <i className="fas fa-satellite-dish text-2xl animate-bounce"></i>
+                <div>
+                  <h4 className="font-bold uppercase text-xs">Interferência no Radar</h4>
+                  <p className="text-[10px] opacity-70">{error}</p>
+                </div>
               </div>
             )}
 
             {(isLoading || results.length > 0) && (
-              <section>
-                <div className="flex justify-between items-end mb-8 px-2">
-                  <div className="flex items-center gap-4">
-                    <span className="text-4xl font-black text-white italic">{results.length}</span>
-                    <h2 className="text-lg font-bold text-slate-300 uppercase">Grupos Encontrados</h2>
+              <section className="mt-8">
+                <div className="flex flex-col md:flex-row justify-between items-start md:items-end mb-10 gap-4 px-2">
+                  <div className="flex items-center gap-6">
+                    <div className="flex flex-col">
+                      <span className="text-5xl font-black text-white italic tracking-tighter leading-none">
+                        {results.length}
+                      </span>
+                      <span className="text-[10px] font-black text-green-500 uppercase tracking-widest mt-1">Links Válidos</span>
+                    </div>
+                    <div className="h-12 w-px bg-slate-800 hidden md:block"></div>
+                    <h2 className="text-xl font-black text-slate-200 uppercase tracking-tight italic">
+                      Resultados da Varredura
+                    </h2>
                   </div>
-                  {isLoading && <div className="text-green-500 text-[10px] font-black uppercase animate-pulse">Varrendo Redes...</div>}
+                  
+                  {isLoading && (
+                    <div className="flex items-center gap-3 bg-green-500/10 border border-green-500/20 px-4 py-2 rounded-2xl">
+                      <div className="flex gap-1">
+                        <div className="w-1 h-3 bg-green-500 animate-bounce"></div>
+                        <div className="w-1 h-3 bg-green-500 animate-bounce [animation-delay:0.2s]"></div>
+                        <div className="w-1 h-3 bg-green-500 animate-bounce [animation-delay:0.4s]"></div>
+                      </div>
+                      <span className="text-green-500 text-[9px] font-black uppercase tracking-tighter">Explorando Indexadores...</span>
+                    </div>
+                  )}
                 </div>
                 
-                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8">
                   {results.map((group) => (
-                    <GroupCard key={group.id} group={group} onVerified={(id, v) => v && setVerifiedCount(c => c+1)} />
+                    <GroupCard key={group.id} group={group} />
                   ))}
                 </div>
               </section>
             )}
 
             {!hasSearched && (
-              <div className="mt-20 py-24 glass rounded-[3rem] text-center">
-                <h2 className="text-5xl font-black text-white mb-4 italic uppercase">Radar <span className="text-gradient">To-Ligado</span></h2>
-                <p className="text-slate-400 max-w-xl mx-auto mb-8 font-medium">Digite uma palavra-chave para que nossa IA localize grupos exclusivos e ativos em tempo real.</p>
-                <div className="flex justify-center gap-8 opacity-40">
-                  <div className="text-center"><div className="text-xl font-bold text-white">2025</div><div className="text-[8px] uppercase font-black">Scan</div></div>
-                  <div className="text-center"><div className="text-xl font-bold text-white">100%</div><div className="text-[8px] uppercase font-black">Online</div></div>
+              <div className="mt-20 py-32 glass rounded-[4rem] text-center relative overflow-hidden group">
+                <div className="absolute inset-0 bg-gradient-to-b from-green-500/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-1000"></div>
+                <i className="fas fa-radar text-7xl text-green-500/20 mb-8 block animate-pulse"></i>
+                <h2 className="text-6xl font-black text-white mb-6 italic uppercase tracking-tighter">
+                  Radar <span className="text-gradient">To-Ligado</span>
+                </h2>
+                <p className="text-slate-400 max-w-xl mx-auto mb-10 font-medium px-4 leading-relaxed">
+                  Conecte-se com o futuro. Nossa inteligência artificial varre a web em tempo real para encontrar comunidades ativas e exclusivas para você.
+                </p>
+                <div className="flex justify-center gap-12 opacity-30">
+                  <div className="text-center">
+                    <div className="text-2xl font-bold text-white tracking-tighter">2025</div>
+                    <div className="text-[9px] uppercase font-black tracking-widest">Database</div>
+                  </div>
+                  <div className="text-center">
+                    <div className="text-2xl font-bold text-white tracking-tighter">0.3s</div>
+                    <div className="text-[9px] uppercase font-black tracking-widest">Latency</div>
+                  </div>
                 </div>
               </div>
             )}
           </div>
         ) : view === 'admin-login' ? (
-          <LoginForm onLogin={() => { localStorage.setItem('is_admin', 'true'); window.location.hash = '#dashboard'; }} onCancel={() => window.location.hash = ''} />
+          <LoginForm 
+            onLogin={() => { 
+              localStorage.setItem('is_admin', 'true'); 
+              window.location.hash = '#dashboard'; 
+            }} 
+            onCancel={() => window.location.hash = ''} 
+          />
         ) : (
-          <AdminPanel stats={stats} onLogout={() => { localStorage.removeItem('is_admin'); window.location.hash = ''; }} systemReady={true} />
+          <AdminPanel 
+            stats={stats} 
+            onLogout={() => { 
+              localStorage.removeItem('is_admin'); 
+              window.location.hash = ''; 
+            }} 
+            systemReady={true} 
+          />
         )}
       </div>
-      <footer className="py-8 border-t border-white/5 text-center mt-auto">
-        <p className="text-[10px] text-slate-600 font-bold uppercase tracking-widest">To-Ligado.com © 2025 - Tecnologia de Busca Inteligente</p>
+      <footer className="py-12 border-t border-white/5 text-center mt-auto bg-black/20">
+        <p className="text-[10px] text-slate-600 font-bold uppercase tracking-[0.4em] mb-2">Powered by To-Ligado Search Engine</p>
+        <p className="text-[9px] text-slate-800 font-medium px-4">Esta ferramenta utiliza IA generativa para indexar informações públicas da web.</p>
       </footer>
     </div>
   );

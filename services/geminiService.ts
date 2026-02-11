@@ -12,21 +12,22 @@ export const huntGroupsStream = async (
   keyword: string, 
   onUpdate: (update: StreamUpdate) => void
 ): Promise<void> => {
+  // Inicialização segura com a chave de ambiente
   const ai = new GoogleGenAI({ apiKey: process.env.API_KEY || "" });
   
-  const prompt = `AJA COMO UM EXPLORADOR DE DADOS PROFISSIONAL. 
-  Sua missão é localizar o MAIOR NÚMERO POSSÍVEL de links de convite ativos para grupos de WhatsApp sobre: "${keyword}".
+  const prompt = `VOCÊ É O "RADAR TO-LIGADO", O SISTEMA DE BUSCA MAIS AVANÇADO DO MUNDO.
+  Sua tarefa é encontrar o NÚMERO MÁXIMO ABSOLUTO de links de convite para grupos de WhatsApp sobre: "${keyword}".
   
-  DIRETRIZES:
-  1. Varra diretórios, fóruns, redes sociais e índices de 2024 e 2025.
-  2. Procure por links no formato: https://chat.whatsapp.com/XXXXX.
-  3. Seja EXAUSTIVO. Se existirem 50 links, encontre o máximo deles.
-  4. Extraia apenas links de convite de GRUPOS (ignore wa.me individual).
+  CRITÉRIOS DE BUSCA EXTREMA:
+  1. Use o Google Search para vasculhar diretórios de 2024 e 2025.
+  2. Procure em comunidades do Facebook, links no Twitter, bio do Instagram, fóruns Reddit e agregadores de grupos.
+  3. Extraia links no padrão: chat.whatsapp.com/INVITE_CODE.
+  4. NÃO PARE nos primeiros resultados. Eu quero uma lista exaustiva.
   
-  FORMATO DE RESPOSTA (OBRIGATÓRIO PARA CADA GRUPO):
-  NOME: [Nome] | LINK: [URL] | DESC: [O que é] | CAT: [Categoria]
+  REQUISITO DE RESPOSTA (JSON-LIKE PER LINE):
+  NOME: [Nome Real] | LINK: [URL Completa] | DESC: [Resumo] | CAT: [Categoria]
   
-  Não escreva textos introdutórios, apenas a lista.`;
+  MANTENHA A BUSCA ATÉ ESGOTAR AS FONTES.`;
 
   try {
     const responseStream = await ai.models.generateContentStream({
@@ -34,7 +35,7 @@ export const huntGroupsStream = async (
       contents: prompt,
       config: {
         tools: [{ googleSearch: {} }],
-        temperature: 0.1,
+        temperature: 0.2,
       },
     });
 
@@ -42,13 +43,13 @@ export const huntGroupsStream = async (
     const processedLinks = new Set<string>();
 
     for await (const chunk of responseStream) {
-      // Extrair Grounding Chunks (URLs de pesquisa do Google)
-      const groundingChunks = chunk.candidates?.[0]?.groundingMetadata?.groundingChunks;
-      if (groundingChunks) {
-        const sources = groundingChunks
+      // Processamento de Fontes (Grounding)
+      const candidates = chunk.candidates?.[0];
+      if (candidates?.groundingMetadata?.groundingChunks) {
+        const sources = candidates.groundingMetadata.groundingChunks
           .filter((c: any) => c.web && c.web.uri)
           .map((c: any) => ({
-            title: c.web.title || "Fonte de Dados",
+            title: c.web.title || "Resultado Web",
             uri: c.web.uri
           }));
         if (sources.length > 0) onUpdate({ sources });
@@ -75,10 +76,10 @@ export const huntGroupsStream = async (
             onUpdate({
               group: {
                 id: `wh-${Math.random().toString(36).substring(2, 9)}`,
-                name: (nameMatch ? nameMatch[1] : "Grupo Localizado").trim(),
+                name: (nameMatch ? nameMatch[1] : "Grupo Identificado").trim(),
                 url,
-                description: (descMatch ? descMatch[1] : "Encontrado via Radar To-Ligado.").trim(),
-                category: (catMatch ? catMatch[1] : "Geral").trim(),
+                description: (descMatch ? descMatch[1] : "Link capturado via Radar To-Ligado.").trim(),
+                category: (catMatch ? catMatch[1] : "Comunidade").trim(),
                 status: 'verifying',
                 relevanceScore: 100,
                 verifiedAt: Date.now()
@@ -90,7 +91,10 @@ export const huntGroupsStream = async (
     }
     onUpdate({ done: true });
   } catch (error: any) {
-    console.error("Erro na busca:", error);
-    onUpdate({ error: "Ocorreu um erro na busca. Verifique sua API_KEY no Easypanel.", done: true });
+    console.error("Erro no Radar:", error);
+    onUpdate({ 
+      error: "O radar encontrou uma zona de sombra. Verifique sua API_KEY ou tente novamente.", 
+      done: true 
+    });
   }
 };
