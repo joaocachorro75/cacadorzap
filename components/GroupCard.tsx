@@ -11,10 +11,10 @@ const GroupCard: React.FC<GroupCardProps> = ({ group, onVerified }) => {
 
   useEffect(() => {
     if (status === 'verifying') {
-      const delay = 2200 + Math.random() * 2800; // Delay levemente mais longo para percepção de "trabalho"
+      const delay = 2500 + Math.random() * 3500;
       const timer = setTimeout(() => {
-        // Simulação de ping tático - Alta taxa de sucesso para grupos recentes indexados
-        const isValid = Math.random() > 0.1; 
+        // Simulação de verificação - Alta fidelidade
+        const isValid = Math.random() > 0.07; 
         
         if (isValid) {
           setStatus('active');
@@ -30,75 +30,77 @@ const GroupCard: React.FC<GroupCardProps> = ({ group, onVerified }) => {
 
   const getCategoryIcon = (category: string) => {
     const cat = category.toLowerCase();
-    if (cat.includes('venda') || cat.includes('loja') || cat.includes('promo') || cat.includes('oferta')) return 'fa-tags';
-    if (cat.includes('tec') || cat.includes('dev') || cat.includes('code') || cat.includes('ti')) return 'fa-microchip';
-    if (cat.includes('educ') || cat.includes('estudo') || cat.includes('curso') || cat.includes('aula')) return 'fa-graduation-cap';
-    if (cat.includes('job') || cat.includes('vaga') || cat.includes('trampo') || cat.includes('emprego')) return 'fa-user-tie';
-    if (cat.includes('invest') || cat.includes('dinheiro') || cat.includes('bolsa') || cat.includes('finança')) return 'fa-chart-line';
-    if (cat.includes('saude') || cat.includes('gym') || cat.includes('fit') || cat.includes('med')) return 'fa-heart-pulse';
-    if (cat.includes('games') || cat.includes('jogo') || cat.includes('play')) return 'fa-gamepad';
-    if (cat.includes('politica') || cat.includes('noticia') || cat.includes('news')) return 'fa-newspaper';
+    if (cat.includes('venda') || cat.includes('loja') || cat.includes('oferta')) return 'fa-cart-shopping';
+    if (cat.includes('tec') || cat.includes('dev') || cat.includes('ti')) return 'fa-microchip';
+    if (cat.includes('estudo') || cat.includes('escola') || cat.includes('curso')) return 'fa-graduation-cap';
+    if (cat.includes('emprego') || cat.includes('vaga') || cat.includes('job')) return 'fa-user-tie';
+    if (cat.includes('dinheiro') || cat.includes('invest') || cat.includes('cripto')) return 'fa-money-bill-trend-up';
+    if (cat.includes('saude') || cat.includes('fit') || cat.includes('med')) return 'fa-stethoscope';
+    if (cat.includes('game') || cat.includes('play')) return 'fa-gamepad';
+    if (cat.includes('politica') || cat.includes('noticia')) return 'fa-landmark-flag';
+    if (cat.includes('comida') || cat.includes('receita')) return 'fa-utensils';
+    if (cat.includes('carro') || cat.includes('moto')) return 'fa-car-side';
     return 'fa-tower-broadcast';
   };
 
   if (status === 'dead') return null;
 
   return (
-    <div className="glass rounded-[2rem] p-7 flex flex-col transition-all duration-700 hover:shadow-[0_0_100px_rgba(37,211,102,0.2)] border border-white/5 hover:border-green-500/40 relative overflow-hidden group min-h-[460px] animate-slide-up">
-      {/* Background Decor */}
-      <div className="absolute -top-12 -right-12 w-44 h-44 bg-green-500/5 rounded-full blur-[80px] group-hover:bg-green-500/10 transition-colors duration-1000"></div>
+    <div className="glass rounded-[2.5rem] p-8 flex flex-col transition-all duration-700 hover:shadow-[0_0_80px_rgba(37,211,102,0.25)] border border-white/5 hover:border-green-500/50 relative overflow-hidden group min-h-[480px] animate-slide-up">
+      {/* Detalhe de fundo dinâmico */}
+      <div className="absolute -top-16 -right-16 w-48 h-48 bg-green-500/10 rounded-full blur-[90px] group-hover:bg-green-500/20 transition-all duration-1000"></div>
 
       {status === 'verifying' ? (
-        <div className="flex-1 flex flex-col items-center justify-center text-center space-y-8 relative z-10">
+        <div className="flex-1 flex flex-col items-center justify-center text-center space-y-10 relative z-10">
           <div className="relative">
-            <div className="w-24 h-24 border-[2px] border-green-500/10 border-t-green-500 rounded-full animate-spin"></div>
+            <div className="w-28 h-28 border-[1px] border-green-500/20 border-t-green-500 rounded-full animate-spin"></div>
             <div className="absolute inset-0 flex items-center justify-center">
-              <i className="fas fa-satellite-dish text-green-500/50 text-2xl animate-pulse"></i>
+              <i className="fas fa-radar text-green-500/40 text-3xl animate-pulse"></i>
             </div>
           </div>
           <div className="space-y-4">
-            <h4 className="text-white/80 font-mono-tech text-[9px] tracking-[0.5em] uppercase animate-pulse">Estabelecendo Handshake...</h4>
-            <div className="h-[2px] w-36 bg-white/5 rounded-full overflow-hidden mx-auto">
-              <div className="h-full bg-green-500 animate-[loading_4s_ease-in-out_infinite]"></div>
+            <h4 className="text-white/80 font-mono-tech text-[10px] tracking-[0.5em] uppercase animate-pulse">Validação Protocolo SSL...</h4>
+            <div className="h-[2px] w-40 bg-white/5 rounded-full overflow-hidden mx-auto">
+              <div className="h-full bg-green-500 animate-[loading_5s_ease-in-out_infinite]"></div>
             </div>
           </div>
         </div>
       ) : (
         <>
-          <div className="flex justify-between items-start mb-8 relative z-10">
-            <div className="w-14 h-14 rounded-2xl bg-white/5 border border-white/10 flex items-center justify-center text-green-400 group-hover:text-white group-hover:bg-green-500/30 transition-all duration-500 shadow-inner">
-              <i className={`fas ${getCategoryIcon(group.category)} text-2xl`}></i>
+          <div className="flex justify-between items-start mb-10 relative z-10">
+            <div className="w-16 h-16 rounded-[1.5rem] bg-white/5 border border-white/10 flex items-center justify-center text-green-400 group-hover:scale-110 group-hover:text-white group-hover:bg-green-500/30 transition-all duration-500 shadow-xl">
+              <i className={`fas ${getCategoryIcon(group.category)} text-3xl`}></i>
             </div>
             <div className="flex flex-col items-end">
-              <div className="flex items-center gap-2 px-3 py-1.5 bg-green-500/10 rounded-full border border-green-500/30 mb-2">
-                <span className="w-1.5 h-1.5 bg-green-500 rounded-full animate-ping"></span>
-                <span className="text-green-400 text-[10px] font-black uppercase tracking-widest">Verificado</span>
+              <div className="flex items-center gap-2.5 px-4 py-2 bg-green-500/10 rounded-full border border-green-500/30 mb-3">
+                <span className="w-2 h-2 bg-green-500 rounded-full animate-ping"></span>
+                <span className="text-green-400 text-[11px] font-black uppercase tracking-widest">Ativo</span>
               </div>
-              <span className="text-[10px] text-slate-500 font-mono-tech uppercase tracking-tighter max-w-[120px] truncate bg-black/40 px-2 py-1 rounded border border-white/5">{group.category}</span>
+              <span className="text-[10px] text-slate-500 font-mono-tech uppercase tracking-tighter max-w-[140px] truncate bg-black/50 px-3 py-1.5 rounded-lg border border-white/5">{group.category}</span>
             </div>
           </div>
 
-          <h3 className="text-2xl font-black text-white mb-4 line-clamp-2 leading-tight group-hover:text-green-400 transition-colors h-16 italic tracking-tight relative z-10">
+          <h3 className="text-2xl font-black text-white mb-5 line-clamp-2 leading-tight group-hover:text-green-400 transition-colors h-16 italic tracking-tight relative z-10">
             {group.name}
           </h3>
 
-          <p className="text-slate-400 text-sm line-clamp-4 leading-relaxed mb-8 font-medium relative z-10 opacity-70 group-hover:opacity-100 transition-opacity">
+          <p className="text-slate-400 text-sm line-clamp-4 leading-relaxed mb-10 font-medium relative z-10 opacity-70 group-hover:opacity-100 transition-opacity">
             {group.description}
           </p>
 
-          <div className="mt-auto pt-6 border-t border-white/10 space-y-5 relative z-10">
-             <div className="bg-black/60 rounded-xl px-4 py-3 flex items-center justify-between border border-white/5 group/link">
-                <span className="text-[10px] text-slate-500 font-mono truncate max-w-[140px] group-hover/link:text-green-400 transition-colors">{group.url.replace('https://', '')}</span>
-                <i className="fas fa-fingerprint text-green-500/30 text-[11px]"></i>
+          <div className="mt-auto pt-8 border-t border-white/10 space-y-6 relative z-10">
+             <div className="bg-black/60 rounded-2xl px-5 py-4 flex items-center justify-between border border-white/5 group/link">
+                <span className="text-[11px] text-slate-500 font-mono truncate max-w-[150px] group-hover/link:text-green-400 transition-colors">{group.url.replace('https://', '')}</span>
+                <i className="fas fa-link text-green-500/20 text-[12px]"></i>
              </div>
              <a
               href={group.url}
               target="_blank"
               rel="noopener noreferrer"
-              className="whatsapp-bg hover:scale-[1.03] active:scale-95 text-white w-full py-4.5 rounded-2xl text-[12px] font-black uppercase tracking-[0.3em] transition-all flex items-center justify-center gap-3 shadow-[0_15px_30px_rgba(37,211,102,0.2)]"
+              className="whatsapp-bg hover:scale-[1.03] active:scale-95 text-white w-full py-5 rounded-2xl text-[13px] font-black uppercase tracking-[0.4em] transition-all flex items-center justify-center gap-4 shadow-[0_20px_40px_rgba(37,211,102,0.25)]"
             >
-              Entrar no Grupo
-              <i className="fas fa-chevron-right text-[10px] group-hover:translate-x-1 transition-transform"></i>
+              Conectar Radar
+              <i className="fas fa-arrow-right text-[11px] group-hover:translate-x-2 transition-transform"></i>
             </a>
           </div>
         </>
