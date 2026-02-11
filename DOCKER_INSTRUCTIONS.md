@@ -1,26 +1,25 @@
+# Guia de Deploy Easypanel (Resolvendo o Erro)
 
-# Instruções de Deploy (Docker)
+O erro `Could not read package.json` acontece porque o Easypanel não tem acesso aos seus arquivos `.tsx`, `.ts` e `.json`. 
 
-Como o sistema de preview pode restringir a criação do arquivo `Dockerfile` na raiz, utilize o conteúdo abaixo para seu deploy manual:
+### Como Corrigir no Easypanel:
 
-```dockerfile
-# Estágio de Build
-FROM node:20-alpine AS build
-WORKDIR /app
-COPY package*.json ./
-RUN npm install
-COPY . .
-RUN npm run build
+1. **Repositório Git (Obrigatório):**
+   - O Easypanel precisa de uma fonte de arquivos. 
+   - Crie um repositório no GitHub/GitLab.
+   - Envie **TODOS** os arquivos que aparecem no projeto (inclusive as pastas).
+   - No Easypanel, em **General > Source**, escolha **GitHub** e conecte seu repositório.
 
-# Estágio de Execução (Nginx)
-FROM nginx:stable-alpine
-COPY --from=build /app/dist /usr/share/nginx/html
-COPY nginx.conf /etc/nginx/conf.d/default.conf
-EXPOSE 80
-CMD ["nginx", "-g", "daemon off;"]
-```
+2. **Configuração do Dockerfile:**
+   - Em **General > Build**, mude o "Build Method" para **Dockerfile**.
+   - No campo "Dockerfile Path", coloque: `deploy.Dockerfile`.
 
-### Comandos de Build:
-1. Salve o conteúdo acima em um arquivo chamado `Dockerfile` na sua máquina local.
-2. Execute: `docker build -t cacador-grupos .`
-3. Execute: `docker run -p 8080:80 -e API_KEY=SUA_CHAVE_AQUI cacador-grupos`
+3. **Variáveis de Ambiente:**
+   - Vá em **Environment** no Easypanel.
+   - Adicione a chave `API_KEY` com o seu token do Google Gemini.
+
+4. **Deploy:**
+   - Clique em **Deploy**. Agora, o Docker vai encontrar o `package.json` porque ele vai baixar o seu código do GitHub antes de iniciar o build.
+
+### Se você não quiser usar GitHub:
+- Você terá que usar a opção "App Service" do Easypanel e, via terminal (SSH) no seu servidor, copiar os arquivos para a pasta `/etc/easypanel/projects/[nome-do-projeto]/code/`.
