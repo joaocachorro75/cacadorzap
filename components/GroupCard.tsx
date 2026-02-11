@@ -11,9 +11,10 @@ const GroupCard: React.FC<GroupCardProps> = ({ group, onVerified }) => {
 
   useEffect(() => {
     if (status === 'verifying') {
+      const delay = 1800 + Math.random() * 3000;
       const timer = setTimeout(() => {
-        // Simulação de ping tático com probabilidade realista
-        const isValid = Math.random() > 0.12; 
+        // Simulação de ping tático - Alta taxa de sucesso para grupos recentes
+        const isValid = Math.random() > 0.08; 
         
         if (isValid) {
           setStatus('active');
@@ -22,60 +23,57 @@ const GroupCard: React.FC<GroupCardProps> = ({ group, onVerified }) => {
           setStatus('dead');
           if (onVerified) onVerified(group.id, false);
         }
-      }, 2000 + Math.random() * 2500);
+      }, delay);
       return () => clearTimeout(timer);
     }
   }, [status, group.id, onVerified]);
 
   const getCategoryIcon = (category: string) => {
     const cat = category.toLowerCase();
-    if (cat.includes('venda') || cat.includes('loja') || cat.includes('comercio')) return 'fa-cart-shopping';
-    if (cat.includes('tec') || cat.includes('dev') || cat.includes('info')) return 'fa-microchip';
-    if (cat.includes('educ') || cat.includes('estudo') || cat.includes('escola')) return 'fa-graduation-cap';
-    if (cat.includes('job') || cat.includes('vaga') || cat.includes('emprego')) return 'fa-user-tie';
-    if (cat.includes('invest') || cat.includes('dinheiro') || cat.includes('cripto')) return 'fa-chart-line';
-    if (cat.includes('politica') || cat.includes('gov')) return 'fa-landmark';
-    if (cat.includes('musica') || cat.includes('show')) return 'fa-music';
-    if (cat.includes('esporte') || cat.includes('futebol')) return 'fa-volleyball';
-    if (cat.includes('saude') || cat.includes('med')) return 'fa-heart-pulse';
-    return 'fa-users-viewfinder';
+    if (cat.includes('venda') || cat.includes('loja') || cat.includes('promo')) return 'fa-tags';
+    if (cat.includes('tec') || cat.includes('dev') || cat.includes('code')) return 'fa-terminal';
+    if (cat.includes('educ') || cat.includes('estudo') || cat.includes('curso')) return 'fa-book-open-reader';
+    if (cat.includes('job') || cat.includes('vaga') || cat.includes('trampo')) return 'fa-briefcase';
+    if (cat.includes('invest') || cat.includes('dinheiro') || cat.includes('bolsa')) return 'fa-sack-dollar';
+    if (cat.includes('saude') || cat.includes('gym') || cat.includes('fit')) return 'fa-heart-pulse';
+    if (cat.includes('games') || cat.includes('jogo')) return 'fa-gamepad';
+    return 'fa-tower-broadcast';
   };
 
   if (status === 'dead') return null;
 
   return (
-    <div className="glass rounded-[2.5rem] p-6 flex flex-col transition-all duration-500 hover:shadow-[0_0_80px_rgba(37,211,102,0.2)] border border-white/5 hover:border-green-500/50 relative overflow-hidden group min-h-[440px] animate-slide-up">
-      {/* Background Icon Decoration */}
-      <div className="absolute -top-4 -right-4 p-4 opacity-5 group-hover:opacity-10 transition-opacity transform rotate-12 group-hover:rotate-0 duration-700">
-        <i className={`fas ${getCategoryIcon(group.category)} text-9xl`}></i>
-      </div>
+    <div className="glass rounded-[2rem] p-7 flex flex-col transition-all duration-700 hover:shadow-[0_0_100px_rgba(37,211,102,0.15)] border border-white/5 hover:border-green-500/40 relative overflow-hidden group min-h-[460px] animate-slide-up">
+      {/* Elemento Decorativo de Background */}
+      <div className="absolute -top-10 -right-10 w-40 h-40 bg-green-500/5 rounded-full blur-3xl group-hover:bg-green-500/10 transition-colors duration-700"></div>
 
       {status === 'verifying' ? (
-        <div className="flex-1 flex flex-col items-center justify-center text-center space-y-6 relative z-10">
+        <div className="flex-1 flex flex-col items-center justify-center text-center space-y-8 relative z-10">
           <div className="relative">
-            <div className="w-24 h-24 border-[3px] border-green-500/10 border-t-green-500 rounded-full animate-spin"></div>
-            <i className="fas fa-radar absolute inset-0 flex items-center justify-center text-green-500 text-3xl animate-pulse"></i>
-          </div>
-          <div className="space-y-3">
-            <h4 className="text-white font-black uppercase tracking-[0.3em] text-[10px] animate-pulse">Sincronizando com WhatsApp...</h4>
-            <div className="h-1.5 w-32 bg-slate-800 rounded-full overflow-hidden mx-auto">
-              <div className="h-full bg-green-500 animate-[shimmer_2.5s_infinite]"></div>
+            <div className="w-28 h-28 border-[1px] border-green-500/20 border-t-green-500 rounded-full animate-spin"></div>
+            <div className="absolute inset-0 flex items-center justify-center">
+              <i className="fas fa-radar text-green-500 text-3xl animate-pulse"></i>
             </div>
-            <p className="text-slate-500 text-[8px] font-bold uppercase tracking-widest">Validando Token de Convite</p>
+          </div>
+          <div className="space-y-4">
+            <h4 className="text-white/90 font-mono-tech text-[10px] tracking-[0.4em] uppercase animate-pulse">Ping em Comunidade...</h4>
+            <div className="h-1 w-32 bg-white/5 rounded-full overflow-hidden mx-auto">
+              <div className="h-full bg-green-500 animate-[loading_3s_ease-in-out_infinite]"></div>
+            </div>
           </div>
         </div>
       ) : (
         <>
-          <div className="flex justify-between items-start mb-6 relative z-10">
-            <div className="w-14 h-14 rounded-2xl bg-green-500/10 border border-green-500/20 flex items-center justify-center text-green-400 shadow-inner">
+          <div className="flex justify-between items-start mb-8 relative z-10">
+            <div className="w-14 h-14 rounded-2xl bg-white/5 border border-white/10 flex items-center justify-center text-green-400 group-hover:text-white group-hover:bg-green-500/20 transition-all duration-500">
               <i className={`fas ${getCategoryIcon(group.category)} text-2xl`}></i>
             </div>
             <div className="flex flex-col items-end">
-              <div className="flex items-center gap-2 px-3 py-1.5 bg-green-500/10 rounded-full border border-green-500/20 mb-2">
-                <span className="w-2 h-2 bg-green-500 rounded-full animate-pulse shadow-[0_0_8px_#25d366]"></span>
-                <span className="text-green-500 text-[9px] font-black uppercase tracking-widest">Ativo</span>
+              <div className="flex items-center gap-2 px-3 py-1.5 bg-green-500/10 rounded-full border border-green-500/30 mb-2">
+                <span className="w-1.5 h-1.5 bg-green-500 rounded-full animate-ping"></span>
+                <span className="text-green-400 text-[10px] font-black uppercase tracking-widest">Ativo</span>
               </div>
-              <span className="text-[10px] text-slate-400 font-bold uppercase tracking-widest truncate max-w-[120px] bg-white/5 px-2 py-1 rounded-md">{group.category}</span>
+              <span className="text-[10px] text-slate-500 font-mono-tech uppercase tracking-tighter max-w-[120px] truncate">{group.category}</span>
             </div>
           </div>
 
@@ -83,32 +81,33 @@ const GroupCard: React.FC<GroupCardProps> = ({ group, onVerified }) => {
             {group.name}
           </h3>
 
-          <p className="text-slate-400 text-xs line-clamp-4 leading-relaxed mb-6 font-medium relative z-10 opacity-80 group-hover:opacity-100 transition-opacity">
+          <p className="text-slate-400 text-sm line-clamp-4 leading-relaxed mb-8 font-medium relative z-10 opacity-70 group-hover:opacity-100 transition-opacity">
             {group.description}
           </p>
 
-          <div className="mt-auto pt-6 border-t border-white/10 space-y-4 relative z-10">
-             <div className="bg-black/60 rounded-xl px-4 py-3 flex items-center justify-between border border-white/5 group/link">
-                <span className="text-[10px] text-slate-500 font-mono truncate max-w-[140px] group-hover/link:text-green-500/70 transition-colors">{group.url.replace('https://', '')}</span>
-                <i className="fas fa-link text-green-500/40 text-[10px]"></i>
+          <div className="mt-auto pt-6 border-t border-white/10 space-y-5 relative z-10">
+             <div className="bg-black/40 rounded-xl px-4 py-3 flex items-center justify-between border border-white/5 group/link">
+                <span className="text-[10px] text-slate-500 font-mono truncate max-w-[140px] group-hover/link:text-green-500 transition-colors">{group.url.replace('https://', '')}</span>
+                <i className="fas fa-link text-green-500/30 text-[11px]"></i>
              </div>
              <a
               href={group.url}
               target="_blank"
               rel="noopener noreferrer"
-              className="whatsapp-bg hover:scale-[1.03] text-white w-full py-4.5 rounded-2xl text-[11px] font-black uppercase tracking-[0.25em] transition-all flex items-center justify-center gap-3 active:scale-95 shadow-xl shadow-green-500/20"
+              className="whatsapp-bg hover:scale-[1.02] active:scale-95 text-white w-full py-4.5 rounded-2xl text-[12px] font-black uppercase tracking-[0.3em] transition-all flex items-center justify-center gap-3 shadow-2xl shadow-green-500/10"
             >
-              Acessar Grupo
-              <i className="fas fa-arrow-right-long text-[10px]"></i>
+              Conectar Agora
+              <i className="fas fa-chevron-right text-[9px] translate-x-0 group-hover:translate-x-1 transition-transform"></i>
             </a>
           </div>
         </>
       )}
       
       <style>{`
-        @keyframes shimmer {
-          0% { transform: translateX(-150%); }
-          100% { transform: translateX(250%); }
+        @keyframes loading {
+          0% { transform: translateX(-100%); }
+          50% { transform: translateX(0%); }
+          100% { transform: translateX(100%); }
         }
       `}</style>
     </div>

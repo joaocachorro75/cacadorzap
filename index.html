@@ -7,14 +7,14 @@
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
-        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap');
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=JetBrains+Mono:wght@400;700&display=swap');
         
         :root {
             --wa-green: #25d366;
-            --wa-light: #4ade80;
-            --emerald-bright: #10b981;
+            --wa-dark: #075e54;
+            --emerald-accent: #10b981;
             --bg-deep: #020617;
-            --glass-border: rgba(255, 255, 255, 0.1);
+            --glass-border: rgba(255, 255, 255, 0.08);
         }
 
         body {
@@ -24,70 +24,78 @@
             margin: 0;
             overflow-x: hidden;
             background-image: 
-                radial-gradient(circle at 50% 0%, #0f172a 0%, #020617 100%),
-                url('https://www.transparenttextures.com/patterns/carbon-fibre.png');
+                radial-gradient(circle at 50% 0%, #0f172a 0%, #020617 100%);
             background-attachment: fixed;
         }
 
+        /* Efeito de grade cibernética */
+        body::before {
+            content: '';
+            position: fixed;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background-image: 
+                linear-gradient(rgba(255,255,255,0.02) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(255,255,255,0.02) 1px, transparent 1px);
+            background-size: 50px 50px;
+            z-index: -1;
+            pointer-events: none;
+        }
+
         .glass {
-            background: rgba(15, 23, 42, 0.65);
-            backdrop-filter: blur(24px);
-            -webkit-backdrop-filter: blur(24px);
+            background: rgba(15, 23, 42, 0.7);
+            backdrop-filter: blur(30px) saturate(180%);
+            -webkit-backdrop-filter: blur(30px) saturate(180%);
             border: 1px solid var(--glass-border);
-            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.6);
+            box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.8);
         }
 
         .whatsapp-bg {
-            background: linear-gradient(135deg, #25d366 0%, #075e54 100%);
+            background: linear-gradient(135deg, #25d366 0%, #128c7e 100%);
         }
 
         .text-gradient {
-            background: linear-gradient(to right, #4ade80, #10b981, #25d366);
+            background: linear-gradient(to right, #4ade80, #34d399, #25d366);
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
         }
 
-        @keyframes scan {
-            0% { transform: translateY(-100vh); opacity: 0; }
-            50% { opacity: 1; }
-            100% { transform: translateY(100vh); opacity: 0; }
+        @keyframes scan-v3 {
+            0% { transform: translateY(-10vh); opacity: 0; }
+            10% { opacity: 1; }
+            90% { opacity: 1; }
+            100% { transform: translateY(110vh); opacity: 0; }
         }
         .scanner-line {
             position: fixed;
-            top: 0; left: 0; right: 0; height: 4px;
-            background: linear-gradient(to right, transparent, var(--wa-green), #fff, var(--wa-green), transparent);
-            box-shadow: 0 0 40px var(--wa-green), 0 0 80px var(--emerald-bright);
+            top: 0; left: 0; right: 0; height: 100px;
+            background: linear-gradient(to bottom, transparent, rgba(37, 211, 102, 0.1), var(--wa-green));
+            box-shadow: 0 4px 20px -2px var(--wa-green);
             z-index: 100;
             pointer-events: none;
-            animation: scan 2.5s infinite linear;
-            display: none;
+            opacity: 0;
+            transition: opacity 0.5s;
         }
-        .scanning .scanner-line { display: block; }
+        .scanning .scanner-line { 
+            display: block; 
+            opacity: 1;
+            animation: scan-v3 3s infinite linear;
+        }
 
         /* Custom Scrollbar */
-        ::-webkit-scrollbar { width: 8px; }
+        ::-webkit-scrollbar { width: 10px; }
         ::-webkit-scrollbar-track { background: #020617; }
         ::-webkit-scrollbar-thumb { 
             background: #1e293b; 
-            border-radius: 10px; 
-            border: 2px solid #020617;
+            border-radius: 20px; 
+            border: 3px solid #020617;
         }
         ::-webkit-scrollbar-thumb:hover { background: var(--wa-green); }
 
-        .animate-slide-up {
-            animation: slideUp 0.8s cubic-bezier(0.16, 1, 0.3, 1) forwards;
-        }
-        @keyframes slideUp {
-            from { opacity: 0; transform: translateY(50px); }
-            to { opacity: 1; transform: translateY(0); }
-        }
+        .font-mono-tech { font-family: 'JetBrains Mono', monospace; }
         
-        .animate-pulse-subtle {
-            animation: pulse-subtle 2s infinite ease-in-out;
-        }
-        @keyframes pulse-subtle {
-            0%, 100% { opacity: 0.4; }
-            50% { opacity: 0.8; }
+        @keyframes pulse-ring {
+            0% { transform: scale(.33); opacity: 0; }
+            80%, 100% { transform: scale(1); opacity: 0; }
         }
     </style>
 <script type="importmap">
