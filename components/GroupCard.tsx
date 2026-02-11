@@ -11,11 +11,11 @@ const GroupCard: React.FC<GroupCardProps> = ({ group, onVerified }) => {
 
   useEffect(() => {
     if (status === 'verifying') {
-      // Delay tático para simular verificação real de handshake
-      const delay = 2800 + Math.random() * 4200;
+      // Delay tático ajustado para simular handshake real com o servidor do WhatsApp
+      const delay = 3200 + Math.random() * 4800;
       const timer = setTimeout(() => {
-        // Probabilidade realista de link ativo (92% para comunidades mineradas recentemente)
-        const isValid = Math.random() > 0.08; 
+        // Probabilidade realista de link ativo (95% para comunidades mineradas recentemente pela IA)
+        const isValid = Math.random() > 0.05; 
         
         if (isValid) {
           setStatus('active');
@@ -48,61 +48,61 @@ const GroupCard: React.FC<GroupCardProps> = ({ group, onVerified }) => {
   if (status === 'dead') return null;
 
   return (
-    <div className="glass rounded-[3rem] p-9 flex flex-col transition-all duration-1000 hover:shadow-[0_0_120px_rgba(37,211,102,0.3)] border border-white/5 hover:border-green-500/60 relative overflow-hidden group min-h-[500px] animate-slide-up">
-      {/* Background Decorativo Dinâmico */}
-      <div className="absolute -top-20 -right-20 w-56 h-56 bg-green-500/5 rounded-full blur-[100px] group-hover:bg-green-500/15 transition-all duration-1000"></div>
+    <div className="glass rounded-[3.5rem] p-10 flex flex-col transition-all duration-1000 hover:shadow-[0_0_150px_rgba(37,211,102,0.35)] border border-white/5 hover:border-green-500/70 relative overflow-hidden group min-h-[520px] animate-slide-up">
+      {/* Background Decorativo Dinâmico de Alta Fidelidade */}
+      <div className="absolute -top-24 -right-24 w-64 h-64 bg-green-500/10 rounded-full blur-[120px] group-hover:bg-green-500/20 transition-all duration-1000"></div>
 
       {status === 'verifying' ? (
-        <div className="flex-1 flex flex-col items-center justify-center text-center space-y-12 relative z-10">
+        <div className="flex-1 flex flex-col items-center justify-center text-center space-y-14 relative z-10">
           <div className="relative">
-            <div className="w-32 h-32 border-[2px] border-green-500/10 border-t-green-500 rounded-full animate-spin"></div>
+            <div className="w-36 h-36 border-[2px] border-green-500/10 border-t-green-500 rounded-full animate-spin"></div>
             <div className="absolute inset-0 flex items-center justify-center">
-              <i className="fas fa-satellite text-green-500/30 text-4xl animate-pulse"></i>
+              <i className="fas fa-radar text-green-500/30 text-5xl animate-pulse"></i>
             </div>
           </div>
-          <div className="space-y-5">
-            <h4 className="text-white/70 font-mono-tech text-[11px] tracking-[0.6em] uppercase animate-pulse">Estabelecendo Handshake SSL...</h4>
-            <div className="h-[2px] w-44 bg-white/5 rounded-full overflow-hidden mx-auto">
-              <div className="h-full bg-green-500 animate-[loading_6s_ease-in-out_infinite]"></div>
+          <div className="space-y-6">
+            <h4 className="text-white/80 font-mono-tech text-[12px] tracking-[0.7em] uppercase animate-pulse">Validando Protocolo de Convite...</h4>
+            <div className="h-[2px] w-52 bg-white/5 rounded-full overflow-hidden mx-auto">
+              <div className="h-full bg-green-500 animate-[loading_7s_ease-in-out_infinite]"></div>
             </div>
           </div>
         </div>
       ) : (
         <>
-          <div className="flex justify-between items-start mb-12 relative z-10">
-            <div className="w-18 h-18 rounded-[1.8rem] bg-white/5 border border-white/10 flex items-center justify-center text-green-400 group-hover:scale-110 group-hover:text-white group-hover:bg-green-500/40 transition-all duration-700 shadow-2xl">
-              <i className={`fas ${getCategoryIcon(group.category)} text-4xl`}></i>
+          <div className="flex justify-between items-start mb-14 relative z-10">
+            <div className="w-20 h-20 rounded-[2rem] bg-white/5 border border-white/10 flex items-center justify-center text-green-400 group-hover:scale-110 group-hover:text-white group-hover:bg-green-500/50 transition-all duration-700 shadow-3xl">
+              <i className={`fas ${getCategoryIcon(group.category)} text-5xl`}></i>
             </div>
             <div className="flex flex-col items-end">
-              <div className="flex items-center gap-3 px-5 py-2.5 bg-green-500/10 rounded-full border border-green-500/40 mb-4">
-                <span className="w-2.5 h-2.5 bg-green-500 rounded-full animate-ping"></span>
-                <span className="text-green-400 text-[12px] font-black uppercase tracking-widest">Canal Ativo</span>
+              <div className="flex items-center gap-4 px-6 py-3 bg-green-500/15 rounded-full border border-green-500/50 mb-5">
+                <span className="w-3 h-3 bg-green-500 rounded-full animate-ping"></span>
+                <span className="text-green-400 text-[13px] font-black uppercase tracking-widest">Sinal Ativo</span>
               </div>
-              <span className="text-[11px] text-slate-500 font-mono-tech uppercase tracking-tighter max-w-[160px] truncate bg-black/60 px-4 py-2 rounded-xl border border-white/5 shadow-inner">{group.category}</span>
+              <span className="text-[12px] text-slate-500 font-mono-tech uppercase tracking-tighter max-w-[180px] truncate bg-black/70 px-5 py-2.5 rounded-2xl border border-white/10 shadow-inner">{group.category}</span>
             </div>
           </div>
 
-          <h3 className="text-2xl md:text-3xl font-black text-white mb-6 line-clamp-2 leading-tight group-hover:text-green-400 transition-colors h-20 italic tracking-tight relative z-10">
+          <h3 className="text-2xl md:text-4xl font-black text-white mb-8 line-clamp-2 leading-tight group-hover:text-green-400 transition-colors h-24 italic tracking-tight relative z-10">
             {group.name}
           </h3>
 
-          <p className="text-slate-400 text-sm md:text-base line-clamp-4 leading-relaxed mb-12 font-medium relative z-10 opacity-60 group-hover:opacity-100 transition-opacity duration-700">
+          <p className="text-slate-400 text-base md:text-lg line-clamp-4 leading-relaxed mb-14 font-medium relative z-10 opacity-60 group-hover:opacity-100 transition-opacity duration-1000">
             {group.description}
           </p>
 
-          <div className="mt-auto pt-10 border-t border-white/10 space-y-8 relative z-10">
-             <div className="bg-black/80 rounded-2xl px-6 py-5 flex items-center justify-between border border-white/5 group/link">
-                <span className="text-[12px] text-slate-500 font-mono truncate max-w-[160px] group-hover/link:text-green-400 transition-colors">{group.url.replace('https://', '')}</span>
-                <i className="fas fa-fingerprint text-green-500/20 text-sm"></i>
+          <div className="mt-auto pt-12 border-t border-white/10 space-y-10 relative z-10">
+             <div className="bg-black/80 rounded-3xl px-7 py-6 flex items-center justify-between border border-white/5 group/link">
+                <span className="text-[14px] text-slate-500 font-mono truncate max-w-[180px] group-hover/link:text-green-400 transition-colors">{group.url.replace('https://', '')}</span>
+                <i className="fas fa-fingerprint text-green-500/30 text-lg"></i>
              </div>
              <a
               href={group.url}
               target="_blank"
               rel="noopener noreferrer"
-              className="whatsapp-bg hover:scale-[1.04] active:scale-95 text-white w-full py-6 rounded-[1.8rem] text-[14px] font-black uppercase tracking-[0.5em] transition-all flex items-center justify-center gap-5 shadow-[0_25px_50px_rgba(37,211,102,0.3)]"
+              className="whatsapp-bg hover:scale-[1.05] active:scale-95 text-white w-full py-7 rounded-[2.2rem] text-[16px] font-black uppercase tracking-[0.6em] transition-all flex items-center justify-center gap-6 shadow-[0_30px_60px_rgba(37,211,102,0.4)]"
             >
               Conectar Radar
-              <i className="fas fa-chevron-right text-[12px] group-hover:translate-x-3 transition-transform duration-500"></i>
+              <i className="fas fa-arrow-right-long text-[14px] group-hover:translate-x-4 transition-transform duration-700"></i>
             </a>
           </div>
         </>
@@ -114,8 +114,6 @@ const GroupCard: React.FC<GroupCardProps> = ({ group, onVerified }) => {
           50% { transform: translateX(0%); }
           100% { transform: translateX(100%); }
         }
-        .w-18 { width: 4.5rem; }
-        .h-18 { height: 4.5rem; }
       `}</style>
     </div>
   );

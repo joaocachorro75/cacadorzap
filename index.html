@@ -14,8 +14,8 @@
             --wa-dark: #075e54;
             --emerald-accent: #10b981;
             --bg-deep: #020617;
-            --glass-border: rgba(255, 255, 255, 0.12);
-            --glass-bg: rgba(15, 23, 42, 0.85);
+            --glass-border: rgba(255, 255, 255, 0.1);
+            --glass-bg: rgba(15, 23, 42, 0.88);
         }
 
         body {
@@ -29,27 +29,27 @@
             background-attachment: fixed;
         }
 
-        /* Grade cibernética refinada com máscara suave */
+        /* Grade cibernética de alta densidade com máscara focal */
         body::before {
             content: '';
             position: fixed;
             top: 0; left: 0; width: 100%; height: 100%;
             background-image: 
-                linear-gradient(rgba(37, 211, 102, 0.05) 1px, transparent 1px),
-                linear-gradient(90deg, rgba(37, 211, 102, 0.05) 1px, transparent 1px);
-            background-size: 40px 40px;
+                linear-gradient(rgba(37, 211, 102, 0.04) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(37, 211, 102, 0.04) 1px, transparent 1px);
+            background-size: 35px 35px;
             z-index: -1;
             pointer-events: none;
-            mask-image: radial-gradient(circle at 50% 50%, black 20%, transparent 90%);
-            -webkit-mask-image: radial-gradient(circle at 50% 50%, black 20%, transparent 90%);
+            mask-image: radial-gradient(circle at 50% 40%, black 10%, transparent 85%);
+            -webkit-mask-image: radial-gradient(circle at 50% 40%, black 10%, transparent 85%);
         }
 
         .glass {
             background: var(--glass-bg);
-            backdrop-filter: blur(50px) saturate(180%);
-            -webkit-backdrop-filter: blur(50px) saturate(180%);
+            backdrop-filter: blur(60px) saturate(200%);
+            -webkit-backdrop-filter: blur(60px) saturate(200%);
             border: 1px solid var(--glass-border);
-            box-shadow: 0 25px 60px -15px rgba(0, 0, 0, 0.8);
+            box-shadow: 0 30px 70px -15px rgba(0, 0, 0, 0.9);
         }
 
         .whatsapp-bg {
@@ -62,27 +62,27 @@
             -webkit-text-fill-color: transparent;
         }
 
-        @keyframes scan-v9 {
-            0% { transform: translateY(-25vh); opacity: 0; }
-            15% { opacity: 1; }
-            85% { opacity: 1; }
-            100% { transform: translateY(125vh); opacity: 0; }
+        @keyframes scan-v10 {
+            0% { transform: translateY(-30vh); opacity: 0; }
+            20% { opacity: 1; }
+            80% { opacity: 1; }
+            100% { transform: translateY(130vh); opacity: 0; }
         }
         .scanner-line {
             position: fixed;
-            top: 0; left: 0; right: 0; height: 200px;
-            background: linear-gradient(to bottom, transparent, rgba(37, 211, 102, 0.02), rgba(37, 211, 102, 0.2));
+            top: 0; left: 0; right: 0; height: 250px;
+            background: linear-gradient(to bottom, transparent, rgba(37, 211, 102, 0.01), rgba(37, 211, 102, 0.25));
             border-bottom: 2px solid var(--wa-green);
-            box-shadow: 0 20px 50px -10px rgba(37, 211, 102, 0.5);
+            box-shadow: 0 25px 60px -15px rgba(37, 211, 102, 0.6);
             z-index: 100;
             pointer-events: none;
             opacity: 0;
-            transition: opacity 1s cubic-bezier(0.4, 0, 0.2, 1);
+            transition: opacity 1.2s cubic-bezier(0.4, 0, 0.2, 1);
         }
         .scanning .scanner-line { 
             display: block; 
             opacity: 1;
-            animation: scan-v9 4.5s infinite linear;
+            animation: scan-v10 5s infinite linear;
         }
 
         ::-webkit-scrollbar { width: 10px; }
@@ -97,15 +97,15 @@
         .font-mono-tech { font-family: 'JetBrains Mono', monospace; }
         
         ::selection {
-            background: rgba(37, 211, 102, 0.5);
+            background: rgba(37, 211, 102, 0.6);
             color: white;
         }
 
-        @keyframes slide-up-reveal {
-            from { opacity: 0; transform: translateY(40px) scale(0.98); }
-            to { opacity: 1; transform: translateY(0) scale(1); }
+        @keyframes slide-up-v2 {
+            from { opacity: 0; transform: translateY(60px); }
+            to { opacity: 1; transform: translateY(0); }
         }
-        .animate-slide-up { animation: slide-up-reveal 1s cubic-bezier(0.16, 1, 0.3, 1) forwards; }
+        .animate-slide-up { animation: slide-up-v2 1.2s cubic-bezier(0.16, 1, 0.3, 1) forwards; }
     </style>
 <script type="importmap">
 {

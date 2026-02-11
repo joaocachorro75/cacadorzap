@@ -15,29 +15,28 @@ export const huntGroupsStream = async (
   const apiKey = process.env.API_KEY;
   
   if (!apiKey) {
-    onUpdate({ error: "SISTEMA BLOQUEADO: Credenciais de autenticação To-Ligado não detectadas no ambiente.", done: true });
+    onUpdate({ error: "ACESSO NEGADO: O motor neural To-Ligado requer uma chave de autenticação ativa para realizar varreduras profundas.", done: true });
     return;
   }
 
   const ai = new GoogleGenAI({ apiKey });
   
-  const prompt = `[RADAR TO-LIGADO INTELLIGENCE V8.5]
-ESTADO: OPERAÇÃO DE BUSCA PROFUNDA ATIVA.
-ALVO: Interceptar convites ATIVOS e VERIFICÁVEIS de grupos do WhatsApp focados em: "${keyword}".
+  const prompt = `[RADAR TO-LIGADO INTELLIGENCE V9.0]
+PRIORIDADE: MÁXIMA.
+ALVO: Interceptar convites ATIVOS, PÚBLICOS e VERIFICÁVEIS de grupos do WhatsApp para o nicho: "${keyword}".
 
-ESTRATÉGIA DE VARREDURA:
-1. DIRETÓRIOS WEB: Varra intensivamente whatsappgrupos.com, linkdogrupo.com, gruposwhats.app e diretórios regionais.
-2. FONTES SOCIAIS: Identifique links compartilhados recentemente em perfis públicos do Instagram, threads do Reddit e posts do X (Twitter).
-3. VALIDAÇÃO TÉCNICA: Capture apenas links que correspondam estritamente ao padrão: chat.whatsapp.com/[InviteID].
-4. EXTRAÇÃO DE CONTEXTO: Determine o nome real, a categoria de nicho e uma descrição tática do grupo.
+DIRETRIZES OPERACIONAIS:
+1. RASTREAMENTO PROFUNDO: Varra diretórios globais (whatsappgrupos.com, gruposwhats.app, linkdogrupo.com) e indexadores de links em redes sociais (Twitter/X, Reddit).
+2. EXTRAÇÃO DE ALTA PRECISÃO: Capture apenas links com padrão chat.whatsapp.com/INVITE_ID.
+3. ENRIQUECIMENTO DE DADOS: Identifique o nome real do grupo, categoria de nicho e um resumo tático das atividades permitidas na comunidade.
 
-FORMATO DE RESPOSTA (ESTRITAMENTE UMA LINHA POR REGISTRO):
-DATA:[Nome do Grupo] | LINK:[URL] | DESC:[Breve resumo do propósito] | TAG:[Categoria]
+FORMATO DE RESPOSTA OBRIGATÓRIO (UMA LINHA POR REGISTRO):
+ENTRY:[Nome do Grupo] | LINK:[URL Completa] | DESC:[Resumo Tático] | TAG:[Nicho Específico]
 
-REGRAS DE EXECUÇÃO:
-- NÃO inclua conversas, explicações ou notas de rodapé.
-- NÃO repita links captados em varreduras anteriores.
-- Se nenhuma comunidade de alta relevância for detectada, retorne: SIGNAL_LOSS_TOTAL.`;
+LIMITAÇÕES TÉCNICAS:
+- PROIBIDO introduções, avisos ou qualquer texto fora do formato ENTRY.
+- PROIBIDO repetir links.
+- Se nenhuma comunidade funcional for localizada, retorne estritamente: "SIGNAL_LOST_TOTAL".`;
 
   try {
     const responseStream = await ai.models.generateContentStream({
@@ -58,7 +57,7 @@ REGRAS DE EXECUÇÃO:
         const sources = candidates.groundingMetadata.groundingChunks
           .filter((c: any) => c.web && c.web.uri)
           .map((c: any) => ({
-            title: c.web.title || "Fonte Interceptada",
+            title: c.web.title || "Satélite de Dados",
             uri: c.web.uri
           }));
         if (sources.length > 0) onUpdate({ sources });
@@ -67,8 +66,8 @@ REGRAS DE EXECUÇÃO:
       const chunkText = chunk.text || "";
       fullText += chunkText;
 
-      if (fullText.includes("SIGNAL_LOSS_TOTAL")) {
-        onUpdate({ error: "Sinal Fraco: O radar não conseguiu decodificar comunidades ativas para este termo nos satélites públicos agora.", done: true });
+      if (fullText.includes("SIGNAL_LOST_TOTAL")) {
+        onUpdate({ error: "Falha de Sincronia: O radar varreu as frequências públicas, mas não detectou comunidades ativas compatíveis com este critério agora.", done: true });
         return;
       }
 
@@ -83,16 +82,16 @@ REGRAS DE EXECUÇÃO:
           if (!processedLinks.has(url)) {
             processedLinks.add(url);
             
-            const nameMatch = line.match(/DATA:\s*(.*?)\s*\|/i);
+            const nameMatch = line.match(/ENTRY:\s*(.*?)\s*\|/i);
             const descMatch = line.match(/DESC:\s*(.*?)\s*\|/i);
             const tagMatch = line.match(/TAG:\s*(.*)/i);
 
             onUpdate({
               group: {
-                id: `track-v85-${Math.random().toString(36).substring(2, 11)}`,
-                name: (nameMatch ? nameMatch[1] : "Comunidade Identificada").trim(),
+                id: `radar-v90-${Math.random().toString(36).substring(2, 11)}`,
+                name: (nameMatch ? nameMatch[1] : "Comunidade Interceptada").trim(),
                 url,
-                description: (descMatch ? descMatch[1] : "Descrição extraída via processamento de linguagem natural To-Ligado.").trim(),
+                description: (descMatch ? descMatch[1] : "Link interceptado via rede de inteligência artificial de alto nível To-Ligado.").trim(),
                 category: (tagMatch ? tagMatch[1] : "Geral").trim(),
                 status: 'verifying',
                 relevanceScore: 100,
@@ -107,7 +106,7 @@ REGRAS DE EXECUÇÃO:
   } catch (error: any) {
     console.error("Critical Engine Failure:", error);
     onUpdate({ 
-      error: "ANOMALIA NO NÚCLEO: Houve uma interrupção na comunicação com o motor de busca profunda. Tente novamente em alguns segundos.", 
+      error: "ANOMALIA NO NÚCLEO: O sistema de busca profunda encontrou uma barreira de comunicação com os satélites de busca. Reinicie o radar.", 
       done: true 
     });
   }
