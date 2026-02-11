@@ -12,30 +12,32 @@ export const huntGroupsStream = async (
   keyword: string, 
   onUpdate: (update: StreamUpdate) => void
 ): Promise<void> => {
-  const apiKey = process.env.API_KEY;
+  // Inicialização robusta usando a variável injetada pelo Vite
+  const apiKey = typeof process !== 'undefined' ? process.env.API_KEY : '';
+  
   if (!apiKey) {
-    onUpdate({ error: "FALHA DE SISTEMA: Chave de API ausente na infraestrutura To-Ligado.", done: true });
+    onUpdate({ error: "ERRO DE INFRAESTRUTURA: Chave de API não detectada no ambiente To-Ligado.", done: true });
     return;
   }
 
   const ai = new GoogleGenAI({ apiKey });
   
-  const prompt = `ATUAR COMO O "RADAR TO-LIGADO V3" (EXTRATOR DE DADOS DE ALTA PRECISÃO).
+  const prompt = `VOCÊ É O "RADAR TO-LIGADO V4" - PROTOCOLO DE MINERAÇÃO DE ALTA PRECISÃO.
 
-MISSÃO: Localizar links de convite ATIVOS e RECENTES (2024-2025) para grupos de WhatsApp sobre "${keyword}".
+OBJETIVO: Interceptar links de convite ATIVOS e VERIFICADOS para grupos de WhatsApp sobre "${keyword}".
 
-PROTOCOLOS DE BUSCA:
-1. PESQUISA PROFUNDA: Utilize o Google Search para varrer diretórios de grupos (ex: whatsappgrupos.com, gruposwhats.app), postagens em redes sociais (Twitter, Instagram Bio, Facebook), fóruns (Reddit, Quora) e comunidades segmentadas.
-2. FILTRAGEM DE ELITE: Capture APENAS links no formato exato 'chat.whatsapp.com/INVITE_CODE'. Ignore links 'wa.me'.
-3. VERIFICAÇÃO DE RELEVÂNCIA: Priorize grupos com nomes claros e descrições úteis.
+DIRETRIZES TÉCNICAS:
+1. PESQUISA: Utilize o Google Search para indexar diretórios de grupos, fóruns, redes sociais e postagens recentes (2024-2025).
+2. FILTRO: Capture APENAS URLs que contenham 'chat.whatsapp.com/'. Ignore qualquer outro tipo de link.
+3. SAÍDA: Gere EXCLUSIVAMENTE os dados estruturados abaixo, uma linha por grupo.
 
-FORMATO DE RESPOSTA (ESTRITAMENTE UMA LINHA POR RESULTADO):
-NOME: [Nome Curto] | LINK: [URL chat.whatsapp.com/...] | DESC: [Resumo objetivo] | CAT: [Nicho exato]
+FORMATO OBRIGATÓRIO (NÃO ADICIONE MAIS NADA):
+NOME: [Nome do Grupo] | LINK: [URL chat.whatsapp.com/...] | DESC: [Propósito do grupo] | CAT: [Nicho]
 
-REGRAS CRÍTICAS:
-- PROIBIDO saudações, explicações ou "Aqui estão os grupos".
-- APENAS dados brutos. 
-- Se a varredura falhar, responda: "STATUS: SINAL_NAO_DETECTADO".`;
+RESTRIÇÕES CRÍTICAS:
+- PROIBIDO saudações (ex: "Aqui estão os links...").
+- PROIBIDO comentários.
+- Se não houver sinais detectados, responda exatamente: "STATUS_SINAL: ZUMBI".`;
 
   try {
     const responseStream = await ai.models.generateContentStream({
@@ -44,7 +46,7 @@ REGRAS CRÍTICAS:
       config: {
         tools: [{ googleSearch: {} }],
         temperature: 0.1,
-        thinkingConfig: { thinkingBudget: 1024 }
+        thinkingConfig: { thinkingBudget: 0 } // Respostas rápidas e diretas
       },
     });
 
@@ -52,13 +54,13 @@ REGRAS CRÍTICAS:
     const processedLinks = new Set<string>();
 
     for await (const chunk of responseStream) {
-      // Processamento de Grounding Metadata (Fontes reais da busca)
+      // Captura de metadados de grounding (fontes reais)
       const candidates = chunk.candidates?.[0];
       if (candidates?.groundingMetadata?.groundingChunks) {
         const sources = candidates.groundingMetadata.groundingChunks
           .filter((c: any) => c.web && c.web.uri)
           .map((c: any) => ({
-            title: c.web.title || "Portal de Indexação",
+            title: c.web.title || "Repositório Web",
             uri: c.web.uri
           }));
         if (sources.length > 0) onUpdate({ sources });
@@ -67,8 +69,8 @@ REGRAS CRÍTICAS:
       const chunkText = chunk.text || "";
       fullText += chunkText;
 
-      if (fullText.includes("SINAL_NAO_DETECTADO")) {
-        onUpdate({ error: "O Radar não captou sinais ativos para este termo nos satélites públicos.", done: true });
+      if (fullText.includes("STATUS_SINAL: ZUMBI")) {
+        onUpdate({ error: "O Radar To-Ligado não detectou sinais ativos para este termo nos satélites públicos.", done: true });
         return;
       }
 
@@ -76,6 +78,7 @@ REGRAS CRÍTICAS:
       fullText = lines.pop() || "";
 
       for (const line of lines) {
+        // Regex aprimorada para detectar o link de convite em qualquer parte da linha
         const match = line.match(/chat\.whatsapp\.com\/[a-zA-Z0-9_-]{15,}/i);
         
         if (match) {
@@ -90,9 +93,9 @@ REGRAS CRÍTICAS:
             onUpdate({
               group: {
                 id: `wh-${Math.random().toString(36).substring(2, 9)}`,
-                name: (nameMatch ? nameMatch[1] : "Comunidade Identificada").trim(),
+                name: (nameMatch ? nameMatch[1] : "Comunidade Interceptada").trim(),
                 url,
-                description: (descMatch ? descMatch[1] : "Extraído via varredura profunda To-Ligado.").trim(),
+                description: (descMatch ? descMatch[1] : "Intercepção via motor de busca To-Ligado.").trim(),
                 category: (catMatch ? catMatch[1] : "Geral").trim(),
                 status: 'verifying',
                 relevanceScore: 100,
@@ -105,9 +108,9 @@ REGRAS CRÍTICAS:
     }
     onUpdate({ done: true });
   } catch (error: any) {
-    console.error("Critical Engine Failure:", error);
+    console.error("Critical Engine Error:", error);
     onUpdate({ 
-      error: "SINAL INTERROMPIDO: O Radar To-Ligado encontrou uma barreira na varredura. Tente simplificar a palavra-chave.", 
+      error: "CONEXÃO PERDIDA: Interferência solar detectada. Verifique sua conexão ou tente novamente mais tarde.", 
       done: true 
     });
   }
