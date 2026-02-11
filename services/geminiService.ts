@@ -14,26 +14,28 @@ export const huntGroupsStream = async (
 ): Promise<void> => {
   const apiKey = process.env.API_KEY;
   if (!apiKey) {
-    onUpdate({ error: "ERRO DE SISTEMA: Chave de API não localizada nas variáveis de ambiente.", done: true });
+    onUpdate({ error: "FALHA DE SISTEMA: Chave de API ausente na infraestrutura To-Ligado.", done: true });
     return;
   }
 
   const ai = new GoogleGenAI({ apiKey });
   
-  const prompt = `VOCÊ É O "RADAR TO-LIGADO" - MOTOR DE BUSCA DE COMUNIDADES.
-ALVO: Links de convite ativos para grupos de WhatsApp sobre: "${keyword}".
+  const prompt = `ATUAR COMO O "RADAR TO-LIGADO V3" (EXTRATOR DE DADOS DE ALTA PRECISÃO).
 
-PROTOCOLO DE EXTRAÇÃO:
-1. Varra diretórios, fóruns, redes sociais e índices de grupos de 2024 e 2025.
-2. Identifique URLs que seguem o padrão: chat.whatsapp.com/INVITE_CODE.
-3. GERE EXCLUSIVAMENTE DADOS ESTRUTURADOS. NADA DE CONVERSA.
+MISSÃO: Localizar links de convite ATIVOS e RECENTES (2024-2025) para grupos de WhatsApp sobre "${keyword}".
 
-FORMATO DE SAÍDA (UMA LINHA POR GRUPO):
-NOME: [Nome do Grupo] | LINK: [URL chat.whatsapp.com/...] | DESC: [Resumo do propósito] | CAT: [Categoria]
+PROTOCOLOS DE BUSCA:
+1. PESQUISA PROFUNDA: Utilize o Google Search para varrer diretórios de grupos (ex: whatsappgrupos.com, gruposwhats.app), postagens em redes sociais (Twitter, Instagram Bio, Facebook), fóruns (Reddit, Quora) e comunidades segmentadas.
+2. FILTRAGEM DE ELITE: Capture APENAS links no formato exato 'chat.whatsapp.com/INVITE_CODE'. Ignore links 'wa.me'.
+3. VERIFICAÇÃO DE RELEVÂNCIA: Priorize grupos com nomes claros e descrições úteis.
 
-REGRAS:
-- Não inclua saudações.
-- Se não encontrar nada, responda: "STATUS: SINAL_ZUMBI".`;
+FORMATO DE RESPOSTA (ESTRITAMENTE UMA LINHA POR RESULTADO):
+NOME: [Nome Curto] | LINK: [URL chat.whatsapp.com/...] | DESC: [Resumo objetivo] | CAT: [Nicho exato]
+
+REGRAS CRÍTICAS:
+- PROIBIDO saudações, explicações ou "Aqui estão os grupos".
+- APENAS dados brutos. 
+- Se a varredura falhar, responda: "STATUS: SINAL_NAO_DETECTADO".`;
 
   try {
     const responseStream = await ai.models.generateContentStream({
@@ -42,6 +44,7 @@ REGRAS:
       config: {
         tools: [{ googleSearch: {} }],
         temperature: 0.1,
+        thinkingConfig: { thinkingBudget: 1024 }
       },
     });
 
@@ -49,13 +52,13 @@ REGRAS:
     const processedLinks = new Set<string>();
 
     for await (const chunk of responseStream) {
-      // Extração de Grounding (Fontes)
+      // Processamento de Grounding Metadata (Fontes reais da busca)
       const candidates = chunk.candidates?.[0];
       if (candidates?.groundingMetadata?.groundingChunks) {
         const sources = candidates.groundingMetadata.groundingChunks
           .filter((c: any) => c.web && c.web.uri)
           .map((c: any) => ({
-            title: c.web.title || "Fonte Detectada",
+            title: c.web.title || "Portal de Indexação",
             uri: c.web.uri
           }));
         if (sources.length > 0) onUpdate({ sources });
@@ -64,8 +67,8 @@ REGRAS:
       const chunkText = chunk.text || "";
       fullText += chunkText;
 
-      if (fullText.includes("SINAL_ZUMBI")) {
-        onUpdate({ error: "O Radar To-Ligado não encontrou sinais ativos para este termo.", done: true });
+      if (fullText.includes("SINAL_NAO_DETECTADO")) {
+        onUpdate({ error: "O Radar não captou sinais ativos para este termo nos satélites públicos.", done: true });
         return;
       }
 
@@ -87,9 +90,9 @@ REGRAS:
             onUpdate({
               group: {
                 id: `wh-${Math.random().toString(36).substring(2, 9)}`,
-                name: (nameMatch ? nameMatch[1] : "Grupo Identificado").trim(),
+                name: (nameMatch ? nameMatch[1] : "Comunidade Identificada").trim(),
                 url,
-                description: (descMatch ? descMatch[1] : "Capturado via Varredura To-Ligado.").trim(),
+                description: (descMatch ? descMatch[1] : "Extraído via varredura profunda To-Ligado.").trim(),
                 category: (catMatch ? catMatch[1] : "Geral").trim(),
                 status: 'verifying',
                 relevanceScore: 100,
@@ -102,9 +105,9 @@ REGRAS:
     }
     onUpdate({ done: true });
   } catch (error: any) {
-    console.error("Critical Radar Error:", error);
+    console.error("Critical Engine Failure:", error);
     onUpdate({ 
-      error: "ERRO DE CONEXÃO: O satélite To-Ligado falhou ao processar a requisição.", 
+      error: "SINAL INTERROMPIDO: O Radar To-Ligado encontrou uma barreira na varredura. Tente simplificar a palavra-chave.", 
       done: true 
     });
   }

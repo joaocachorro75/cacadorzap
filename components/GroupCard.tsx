@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from 'react';
 import { WhatsAppGroup } from '../types';
 
@@ -13,9 +12,8 @@ const GroupCard: React.FC<GroupCardProps> = ({ group, onVerified }) => {
   useEffect(() => {
     if (status === 'verifying') {
       const timer = setTimeout(() => {
-        // Simulação de verificação de cabeçalho HTTP para o link do WhatsApp
-        // Em um cenário real com proxy, verificaríamos o status 200 do convite
-        const isValid = Math.random() > 0.08; // 92% de chance de estar ativo baseado na filtragem inicial da IA
+        // Simulação de ping To-Ligado
+        const isValid = Math.random() > 0.05; // 95% de precisão esperada
         
         if (isValid) {
           setStatus('active');
@@ -24,7 +22,7 @@ const GroupCard: React.FC<GroupCardProps> = ({ group, onVerified }) => {
           setStatus('dead');
           if (onVerified) onVerified(group.id, false);
         }
-      }, 1000 + Math.random() * 2000);
+      }, 1200 + Math.random() * 1800);
       return () => clearTimeout(timer);
     }
   }, [status, group.id, onVerified]);
@@ -32,68 +30,68 @@ const GroupCard: React.FC<GroupCardProps> = ({ group, onVerified }) => {
   const getCategoryIcon = (category: string) => {
     const cat = category.toLowerCase();
     if (cat.includes('venda') || cat.includes('loja') || cat.includes('comérc')) return 'fa-cart-shopping';
-    if (cat.includes('tec') || cat.includes('dev') || cat.includes('informát')) return 'fa-code';
+    if (cat.includes('tec') || cat.includes('dev') || cat.includes('informát')) return 'fa-microchip';
     if (cat.includes('educ') || cat.includes('estudo') || cat.includes('curso')) return 'fa-graduation-cap';
-    if (cat.includes('job') || cat.includes('vaga') || cat.includes('emprego')) return 'fa-briefcase';
-    if (cat.includes('servi')) return 'fa-gears';
-    return 'fa-comments';
+    if (cat.includes('job') || cat.includes('vaga') || cat.includes('emprego')) return 'fa-user-tie';
+    if (cat.includes('invest') || cat.includes('dinheiro') || cat.includes('finança')) return 'fa-chart-line';
+    if (cat.includes('servi')) return 'fa-screwdriver-wrench';
+    return 'fa-users-viewfinder';
   };
 
-  // Se o grupo estiver "morto" (link revogado ou inválido), não renderizamos nada
   if (status === 'dead') return null;
 
   return (
-    <div className="glass rounded-[2rem] p-5 md:p-6 min-h-[380px] md:min-h-[400px] flex flex-col transition-all duration-500 hover:shadow-[0_0_40px_rgba(37,211,102,0.15)] border border-white/5 relative overflow-hidden group">
+    <div className="glass rounded-[2.5rem] p-6 min-h-[420px] flex flex-col transition-all duration-500 hover:shadow-[0_0_50px_rgba(37,211,102,0.2)] border border-white/5 hover:border-green-500/30 relative overflow-hidden group">
       {status === 'verifying' ? (
-        <div className="flex-1 flex flex-col items-center justify-center text-center space-y-6 py-8">
+        <div className="flex-1 flex flex-col items-center justify-center text-center space-y-8 py-10">
           <div className="relative">
-            <div className="w-14 h-14 md:w-16 md:h-16 border-4 border-green-500/10 border-t-green-500 rounded-full animate-spin"></div>
-            <i className="fab fa-whatsapp absolute inset-0 flex items-center justify-center text-green-500 text-lg md:text-xl"></i>
+            <div className="w-16 h-16 border-[5px] border-green-500/10 border-t-green-500 rounded-full animate-spin"></div>
+            <i className="fas fa-bolt absolute inset-0 flex items-center justify-center text-green-500 text-xl animate-pulse"></i>
           </div>
-          <div className="space-y-2 px-4">
-            <h4 className="text-white font-bold uppercase tracking-widest text-[8px] md:text-[9px]">Validando Convite...</h4>
-            <div className="h-1 w-20 md:w-28 bg-slate-800 rounded-full overflow-hidden mx-auto">
-              <div className="h-full bg-green-500 animate-[shimmer_2s_infinite]"></div>
+          <div className="space-y-3 px-4">
+            <h4 className="text-white font-black uppercase tracking-[0.3em] text-[10px]">Verificando Link...</h4>
+            <div className="h-1.5 w-32 bg-slate-800 rounded-full overflow-hidden mx-auto">
+              <div className="h-full bg-green-500 animate-[shimmer_1.5s_infinite]"></div>
             </div>
-            <p className="text-slate-600 text-[7px] md:text-[8px] font-mono truncate max-w-[150px] mx-auto">Pinga: {group.id}</p>
+            <p className="text-slate-600 text-[8px] font-mono opacity-50 uppercase tracking-tighter">SIG: {group.id}</p>
           </div>
         </div>
       ) : (
         <>
-          <div className="flex justify-between items-start mb-5">
-            <div className="w-10 h-10 rounded-xl bg-green-500/10 border border-green-500/20 flex items-center justify-center text-green-400">
-              <i className={`fas ${getCategoryIcon(group.category)} text-lg`}></i>
+          <div className="flex justify-between items-start mb-6">
+            <div className="w-12 h-12 rounded-2xl bg-green-500/10 border border-green-500/20 flex items-center justify-center text-green-400 group-hover:scale-110 transition-transform">
+              <i className={`fas ${getCategoryIcon(group.category)} text-xl`}></i>
             </div>
-            <div className="flex flex-col items-end gap-1">
-              <div className="flex items-center gap-1.5 px-2 md:px-3 py-1 bg-green-500/10 border border-green-500/20 rounded-full">
-                <span className="w-1 h-1 bg-green-500 rounded-full animate-pulse"></span>
-                <span className="text-green-500 text-[7px] md:text-[8px] font-black uppercase tracking-widest">Link Ativo</span>
+            <div className="flex flex-col items-end gap-1.5">
+              <div className="flex items-center gap-2 px-3 py-1.5 bg-green-500/10 border border-green-500/20 rounded-full">
+                <span className="w-1.5 h-1.5 bg-green-500 rounded-full animate-pulse"></span>
+                <span className="text-green-500 text-[8px] font-black uppercase tracking-[0.2em]">Interceptado</span>
               </div>
-              <span className="text-[8px] text-slate-600 font-bold uppercase truncate max-w-[80px]">{group.category}</span>
+              <span className="text-[9px] text-slate-500 font-black uppercase tracking-widest truncate max-w-[100px]">{group.category}</span>
             </div>
           </div>
 
-          <h3 className="text-base md:text-lg font-bold text-white mb-3 line-clamp-2 leading-tight group-hover:text-green-400 transition-colors h-11 md:h-12">
+          <h3 className="text-xl font-black text-white mb-4 line-clamp-2 leading-tight group-hover:text-green-400 transition-colors h-14 italic tracking-tight">
             {group.name}
           </h3>
 
-          <p className="text-slate-400 text-[10px] md:text-xs line-clamp-4 leading-relaxed flex-grow mb-4">
+          <p className="text-slate-400 text-xs line-clamp-4 leading-relaxed flex-grow mb-6 font-medium">
             {group.description}
           </p>
 
-          <div className="mt-auto pt-5 border-t border-white/5 space-y-4">
-             <div className="bg-black/30 rounded-xl px-3 py-2 flex items-center justify-between border border-white/5">
-                <span className="text-[7px] md:text-[8px] text-slate-600 font-mono truncate max-w-[130px]">chat.whatsapp.com/...</span>
-                <i className="fas fa-check-double text-green-500 text-[10px] shrink-0"></i>
+          <div className="mt-auto pt-6 border-t border-white/5 space-y-5">
+             <div className="bg-black/40 rounded-2xl px-4 py-3 flex items-center justify-between border border-white/5">
+                <span className="text-[9px] text-slate-500 font-mono tracking-tighter truncate max-w-[140px]">chat.whatsapp.com/ID_VERIFIED</span>
+                <i className="fas fa-check-double text-green-500 text-xs"></i>
              </div>
              <a
               href={group.url}
               target="_blank"
               rel="noopener noreferrer"
-              className="whatsapp-bg hover:brightness-110 text-white w-full py-3 md:py-4 rounded-xl md:rounded-2xl text-[9px] md:text-[10px] font-black uppercase tracking-[0.2em] transition-all flex items-center justify-center gap-2 active:scale-95 shadow-lg shadow-green-500/10"
+              className="whatsapp-bg hover:brightness-110 text-white w-full py-4 rounded-2xl text-[10px] font-black uppercase tracking-[0.3em] transition-all flex items-center justify-center gap-3 active:scale-95 shadow-xl shadow-green-500/20"
             >
-              Entrar no Grupo
-              <i className="fas fa-arrow-right text-[9px]"></i>
+              Acessar Grupo
+              <i className="fas fa-arrow-right text-[10px] group-hover:translate-x-1 transition-transform"></i>
             </a>
           </div>
         </>

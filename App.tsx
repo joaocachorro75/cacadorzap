@@ -40,7 +40,9 @@ const App: React.FC = () => {
     setSources([]);
     setHasSearched(true);
     
+    // Inicia o efeito visual do scanner
     document.body.classList.add('scanning');
+    
     setStats(prev => ({ ...prev, totalSearches: prev.totalSearches + 1 }));
 
     try {
@@ -70,7 +72,7 @@ const App: React.FC = () => {
         }
       });
     } catch (err) {
-      setError("FALHA CRÍTICA: Não foi possível estabelecer conexão com o Radar.");
+      setError("ERRO DE CONEXÃO: Sincronização com o Radar falhou. Tente novamente.");
       setIsLoading(false);
       document.body.classList.remove('scanning');
     }
@@ -90,10 +92,10 @@ const App: React.FC = () => {
               <div className="mb-8 px-6 py-4 glass rounded-[2rem] border-green-500/20">
                 <div className="flex items-center gap-3 mb-3">
                   <div className="w-2 h-2 bg-green-500 rounded-full animate-pulse"></div>
-                  <span className="text-[10px] font-black text-slate-400 uppercase tracking-widest">Sinais Detectados em:</span>
+                  <span className="text-[10px] font-black text-slate-400 uppercase tracking-widest">Ativos Sincronizados:</span>
                 </div>
                 <div className="flex flex-wrap gap-2">
-                  {sources.slice(0, 10).map((s, i) => (
+                  {sources.slice(0, 15).map((s, i) => (
                     <a 
                       key={i} 
                       href={s.uri} 
@@ -101,7 +103,7 @@ const App: React.FC = () => {
                       rel="noreferrer" 
                       className="text-[10px] bg-white/5 border border-white/10 px-3 py-1.5 rounded-full text-slate-400 hover:text-green-400 hover:border-green-500/30 transition-all flex items-center gap-2"
                     >
-                      <i className="fas fa-satellite text-[8px]"></i> {s.title.substring(0, 25)}...
+                      <i className="fas fa-satellite text-[8px]"></i> {s.title.substring(0, 30)}...
                     </a>
                   ))}
                 </div>
@@ -109,40 +111,48 @@ const App: React.FC = () => {
             )}
 
             {error && (
-              <div className="p-6 glass border-red-500/40 rounded-3xl text-red-400 mb-8 flex items-center gap-4">
-                <i className="fas fa-satellite-dish text-2xl animate-bounce"></i>
-                <div className="flex-1">
-                  <h4 className="font-bold uppercase text-xs">Aviso do Radar</h4>
-                  <p className="text-[10px] opacity-70">{error}</p>
+              <div className="p-8 glass border-red-500/40 rounded-[2.5rem] text-red-400 mb-8 flex flex-col sm:flex-row items-center gap-6 animate-shake">
+                <i className="fas fa-radiation text-4xl animate-bounce"></i>
+                <div className="flex-1 text-center sm:text-left">
+                  <h4 className="font-black uppercase text-sm tracking-widest mb-1">Alerta do Radar To-Ligado</h4>
+                  <p className="text-[11px] opacity-70 font-medium leading-relaxed">{error}</p>
                 </div>
-                <button onClick={() => { setHasSearched(false); setError(null); }} className="text-[10px] font-black uppercase underline hover:text-white">Limpar Busca</button>
+                <button onClick={() => { setHasSearched(false); setError(null); }} className="px-6 py-3 bg-white/5 hover:bg-white/10 rounded-2xl text-[10px] font-black uppercase tracking-widest border border-white/10 transition-all">Limpar Canal</button>
               </div>
             )}
 
             {(isLoading || results.length > 0) && (
               <section className="mt-8">
-                <div className="flex flex-col md:flex-row justify-between items-start md:items-end mb-10 gap-4 px-2">
-                  <div className="flex items-center gap-6">
+                <div className="flex flex-col md:flex-row justify-between items-start md:items-end mb-12 gap-6 px-2">
+                  <div className="flex items-center gap-8">
                     <div className="flex flex-col">
-                      <span className="text-5xl font-black text-white italic tracking-tighter leading-none">
+                      <span className="text-6xl font-black text-white italic tracking-tighter leading-none">
                         {results.length}
                       </span>
-                      <span className="text-[10px] font-black text-green-500 uppercase tracking-widest mt-1">Links Interceptados</span>
+                      <span className="text-[10px] font-black text-green-500 uppercase tracking-[0.3em] mt-2">Interceptações</span>
                     </div>
-                    <div className="h-12 w-px bg-slate-800 hidden md:block"></div>
-                    <h2 className="text-xl font-black text-slate-200 uppercase tracking-tight italic">
-                      Fluxo de Dados ao Vivo
-                    </h2>
+                    <div className="h-16 w-px bg-slate-800 hidden md:block"></div>
+                    <div>
+                      <h2 className="text-xl font-black text-slate-200 uppercase tracking-tight italic">
+                        Fluxo de Dados ao Vivo
+                      </h2>
+                      <p className="text-[10px] text-slate-500 font-bold uppercase tracking-widest mt-1">Varredura em tempo real por IA</p>
+                    </div>
                   </div>
                   
                   {isLoading && (
-                    <div className="flex items-center gap-3 bg-green-500/10 border border-green-500/20 px-4 py-2 rounded-2xl">
-                      <span className="text-green-500 text-[9px] font-black uppercase tracking-tighter animate-pulse">Sincronizando com Satélites To-Ligado...</span>
+                    <div className="flex items-center gap-4 bg-green-500/10 border border-green-500/20 px-6 py-3 rounded-2xl">
+                      <div className="flex gap-1.5">
+                        <div className="w-1.5 h-4 bg-green-500 animate-bounce"></div>
+                        <div className="w-1.5 h-4 bg-green-500 animate-bounce [animation-delay:0.2s]"></div>
+                        <div className="w-1.5 h-4 bg-green-500 animate-bounce [animation-delay:0.4s]"></div>
+                      </div>
+                      <span className="text-green-500 text-[10px] font-black uppercase tracking-[0.2em] animate-pulse">Sincronizando Satélites...</span>
                     </div>
                   )}
                 </div>
                 
-                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8 mb-20">
+                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8 mb-24">
                   {results.map((group) => (
                     <GroupCard key={group.id} group={group} />
                   ))}
@@ -151,23 +161,31 @@ const App: React.FC = () => {
             )}
 
             {!hasSearched && (
-              <div className="mt-20 py-32 glass rounded-[4rem] text-center relative overflow-hidden group">
-                <div className="absolute inset-0 bg-gradient-to-b from-green-500/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-1000"></div>
-                <i className="fas fa-radar text-7xl text-green-500/20 mb-8 block animate-pulse"></i>
-                <h2 className="text-6xl font-black text-white mb-6 italic uppercase tracking-tighter">
-                  Radar <span className="text-gradient">To-Ligado</span>
-                </h2>
-                <p className="text-slate-400 max-w-xl mx-auto mb-10 font-medium px-4 leading-relaxed">
-                  Sistema de inteligência para localização de comunidades. Varremos indexadores públicos e redes sociais em busca de links verificados.
-                </p>
-                <div className="flex justify-center gap-12 opacity-30">
-                  <div className="text-center">
-                    <div className="text-2xl font-bold text-white tracking-tighter">2024.12</div>
-                    <div className="text-[9px] uppercase font-black tracking-widest">Engine Ver.</div>
+              <div className="mt-20 py-40 glass rounded-[5rem] text-center relative overflow-hidden group border-white/5">
+                <div className="absolute inset-0 bg-gradient-to-b from-green-500/10 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-1000"></div>
+                <div className="relative z-10">
+                  <div className="w-24 h-24 bg-slate-900 rounded-full flex items-center justify-center mx-auto mb-10 border border-slate-800 shadow-2xl group-hover:scale-110 transition-transform duration-500">
+                    <i className="fas fa-radar text-4xl text-green-500 animate-pulse"></i>
                   </div>
-                  <div className="text-center">
-                    <div className="text-2xl font-bold text-white tracking-tighter">100%</div>
-                    <div className="text-[9px] uppercase font-black tracking-widest">Secure Crawl</div>
+                  <h2 className="text-5xl md:text-7xl font-black text-white mb-8 italic uppercase tracking-tighter">
+                    Radar <span className="text-gradient">To-Ligado</span>
+                  </h2>
+                  <p className="text-slate-400 max-w-2xl mx-auto mb-14 font-medium px-6 text-sm md:text-lg leading-relaxed opacity-80">
+                    O mais avançado motor de busca de comunidades do Brasil. Utilizamos inteligência artificial para minerar e verificar links de convite ativos em toda a web.
+                  </p>
+                  <div className="flex justify-center gap-16 md:gap-24 opacity-40">
+                    <div className="text-center">
+                      <div className="text-3xl font-black text-white tracking-tighter">2025.1</div>
+                      <div className="text-[10px] uppercase font-black tracking-[0.3em] mt-1">Engine v3</div>
+                    </div>
+                    <div className="text-center">
+                      <div className="text-3xl font-black text-white tracking-tighter">0.1s</div>
+                      <div className="text-[10px] uppercase font-black tracking-[0.3em] mt-1">Latency</div>
+                    </div>
+                    <div className="text-center">
+                      <div className="text-3xl font-black text-white tracking-tighter">100%</div>
+                      <div className="text-[10px] uppercase font-black tracking-[0.3em] mt-1">Verificado</div>
+                    </div>
                   </div>
                 </div>
               </div>
@@ -192,9 +210,14 @@ const App: React.FC = () => {
           />
         )}
       </div>
-      <footer className="py-12 border-t border-white/5 text-center mt-auto bg-black/20">
-        <p className="text-[10px] text-slate-600 font-bold uppercase tracking-[0.4em] mb-2">Powered by To-Ligado.com Intelligence</p>
-        <p className="text-[9px] text-slate-800 font-medium px-4">Esta ferramenta é um experimento de mineração de dados públicos usando IA generativa.</p>
+      <footer className="py-16 border-t border-white/5 text-center mt-auto bg-black/40">
+        <p className="text-[11px] text-slate-500 font-black uppercase tracking-[0.5em] mb-4">Powered by To-Ligado.com | Intelligence Division</p>
+        <div className="flex justify-center gap-6 opacity-30 grayscale hover:grayscale-0 transition-all duration-500">
+           <i className="fab fa-whatsapp text-xl"></i>
+           <i className="fas fa-satellite-dish text-xl"></i>
+           <i className="fas fa-shield-halved text-xl"></i>
+        </div>
+        <p className="text-[9px] text-slate-800 font-medium px-8 mt-6">Varredura profunda autorizada para fins de indexação pública de dados abertos.</p>
       </footer>
     </div>
   );
