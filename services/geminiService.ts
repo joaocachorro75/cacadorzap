@@ -9,7 +9,7 @@ export interface StreamUpdate {
 }
 
 /**
- * Motor de Busca To-Ligado V15.5 - Ultra Stealth Extraction
+ * Motor de Busca To-Ligado V15.5 - Ultra Stealth Extraction (MAX VOLUME)
  */
 export const huntGroupsStream = async (
   keyword: string, 
@@ -24,16 +24,20 @@ export const huntGroupsStream = async (
 
   const ai = new GoogleGenAI({ apiKey });
   
-  const prompt = `[SISTEMA DE INTERCEPTAÇÃO TO-LIGADO V15.5]
-OBJETIVO: Extração massiva de convites de WhatsApp para: "${keyword}".
+  // Prompt otimizado para extração massiva e diversificada
+  const prompt = `[SISTEMA DE INTERCEPTAÇÃO TO-LIGADO V15.5 - MODO MASSIVO]
+OBJETIVO: Extração do MAIOR NÚMERO POSSÍVEL de links de convite do WhatsApp para: "${keyword}".
 
-REQUISITOS TÉCNICOS:
-1. Varredura profunda em bancos de dados de links, redes sociais e fóruns.
-2. Identifique e retorne APENAS links únicos de chat.whatsapp.com.
-3. Formato por linha: G:[NOME] | L:[URL] | D:[DESCRICAO] | T:[TAG]
+REQUISITOS DE VOLUME:
+1. Não pare nos primeiros resultados. Explore diretórios de grupos, postagens de redes sociais e logs de chats.
+2. Identifique variações de convites (chat.whatsapp.com/INVITE_CODE).
+3. Busque por termos relacionados para ampliar o alcance se os resultados diretos forem escassos.
 
-ESTRATÉGIA: Se encontrar menos de 40 links, procure variações semânticas da palavra-chave para maximizar o volume.
-NÃO INCLUA TEXTO EXPLICATIVO.`;
+FORMATO DE RETORNO (RIGOROSO):
+Uma linha por grupo encontrado seguindo este padrão:
+G:[NOME DO GRUPO] | L:[LINK COMPLETO] | D:[DESCRICAO BREVE] | T:[CATEGORIA]
+
+NÃO ADICIONE TEXTO DE INTRODUÇÃO OU CONCLUSÃO. APENAS OS DADOS BRUTOS.`;
 
   try {
     const responseStream = await ai.models.generateContentStream({
@@ -41,7 +45,7 @@ NÃO INCLUA TEXTO EXPLICATIVO.`;
       contents: prompt,
       config: {
         tools: [{ googleSearch: {} }],
-        temperature: 0.1,
+        temperature: 0.2, // Um pouco mais de temperatura para diversidade de busca
       },
     });
 
@@ -49,13 +53,13 @@ NÃO INCLUA TEXTO EXPLICATIVO.`;
     const processedLinks = new Set<string>();
 
     for await (const chunk of responseStream) {
-      // Extração de Grounding (Fontes)
+      // Processamento de Grounding para transparência de fontes
       const candidates = chunk.candidates?.[0];
       if (candidates?.groundingMetadata?.groundingChunks) {
         const sources = candidates.groundingMetadata.groundingChunks
           .filter((c: any) => c.web && c.web.uri)
           .map((c: any) => ({
-            title: c.web.title || "Fonte de Dados",
+            title: c.web.title || "Fonte Detectada",
             uri: c.web.uri
           }));
         if (sources.length > 0) onUpdate({ sources });
@@ -68,6 +72,7 @@ NÃO INCLUA TEXTO EXPLICATIVO.`;
       fullText = lines.pop() || ""; 
 
       for (const line of lines) {
+        // Regex aprimorada para detectar links de convite
         const urlMatch = line.match(/chat\.whatsapp\.com\/[a-zA-Z0-9_-]{12,}/i);
         
         if (urlMatch) {
@@ -77,14 +82,15 @@ NÃO INCLUA TEXTO EXPLICATIVO.`;
             
             const nameMatch = line.match(/G:\s*(.*?)\s*\|/i);
             const descMatch = line.match(/D:\s*(.*?)\s*\|/i);
+            const tagMatch = line.match(/T:\s*(.*?)$/i);
 
             onUpdate({
               group: {
                 id: `wa-${Math.random().toString(36).substring(2, 9)}`,
-                name: (nameMatch ? nameMatch[1] : "Grupo Encontrado").trim(),
+                name: (nameMatch ? nameMatch[1] : "Grupo Radar").trim(),
                 url,
-                description: (descMatch ? descMatch[1] : "Extraído via Radar To-Ligado.").trim(),
-                category: keyword,
+                description: (descMatch ? descMatch[1] : "Encontrado via varredura neural profunda.").trim(),
+                category: (tagMatch ? tagMatch[1] : keyword).trim(),
                 status: 'verifying',
                 relevanceScore: 100,
                 verifiedAt: Date.now()
@@ -96,6 +102,6 @@ NÃO INCLUA TEXTO EXPLICATIVO.`;
     }
     onUpdate({ done: true });
   } catch (error: any) {
-    onUpdate({ error: "SINAL FRACO: Tente novamente ou use outra palavra-chave.", done: true });
+    onUpdate({ error: "SINAL INSTÁVEL: O motor de busca encontrou uma barreira. Tente novamente.", done: true });
   }
 };
